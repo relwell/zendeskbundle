@@ -10,5 +10,9 @@ In app/autoload.php, add the following lines before AnnotationRegistry::register
 
     $loader->addClassMap( array( 'zendesk' =>  __DIR__.'/../vendor/zendesk-api/zendesk.php' ) );
 
-Add your Zendesk API information to Resources/config/api.yml, which is not managed in Git for security purposes.
-We do provide api.stub.yml, which you can fill in and copy over.
+Add the following fields to your application's parameters.yml:
+
+    parameters:
+        zendesk_api_key:   yourkey
+        zendesk_api_user:  youruser
+        zendesk_api_subdomain: yoursubdomain
