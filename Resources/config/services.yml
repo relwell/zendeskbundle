@@ -1,7 +1,10 @@
+imports:
+    - { resource: "@ZendeskBundle/Resources/config/api.yml" }
+
 parameters:
-#    zendesk.example.class: Malwarebytes\ZendeskBundle\Example
+    zendesk.apiservice.class: Malwarebytes\ZendeskBundle\Service\ApiService
 
 services:
-#    zendesk.example:
-#        class: %zendesk.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
+    zendesk.api:
+        class: zendesk.apiservice.class
+        arguments: [%api.apikey%, %api.user%, %api.subdomain%]
