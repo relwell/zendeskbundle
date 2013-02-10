@@ -25,7 +25,17 @@ class ApiService
      */
     public function __construct( $apiKey, $user, $subDomain )
     {
-        $this->api = new zendesk( $apiKey, $user, $subDomain );
+        $this->setZendeskApi( new zendesk( $apiKey, $user, $subDomain ) );
+    }
+    
+    /**
+     * Registers a newly configured zendesk api wrapper
+     * @param \zendesk $zendesk
+     */
+    public function setZendeskApi( \zendesk $zendesk )
+    {
+        $this->api = $zendesk;
+        return $this;
     }
     
     /**
@@ -35,12 +45,12 @@ class ApiService
      * @param string $email
      * @return mixed return value of \zendesk::call
      */
-    public function createSubmitter( $name, $email )
+    public function createUser( $name, $email )
     {
         $jsonArray = array(
                 'name' => $name,
                 'email' => $email
                 );
-        $this->api->call( 'users' , json_encode( $jsonArray ), 'POST' );
+        return $this->api->call( 'users' , json_encode( $jsonArray ), 'POST' );
     } 
 }

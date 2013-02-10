@@ -1,4 +1,0 @@
-api:
-    subdomain: yoursubdomain.zendesk.com
-    key: yourkey
-    user: yourusername
