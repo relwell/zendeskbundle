@@ -94,7 +94,8 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         
         $dataArray = array(
                 'name' => $name,
-                'email' => $email
+                'email' => $email,
+                'verified' => true
                 );
         
         $responseArray = array( 'mockresponse' );
@@ -109,6 +110,49 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
                 $responseArray,
                 $service->setZendeskApi( $this->zendesk )
                         ->createUser   ( $name, $email )
+        );
+        $dataArray['verified'] = false;
+        $this->zendesk
+            ->expects( $this->at( 0 ) )
+            ->method ( 'call' )
+            ->with   ( '/users', json_encode( $dataArray ), 'POST' )
+            ->will   ( $this->returnValue( $responseArray ) )
+        ;
+        $this->assertEquals(
+                $responseArray,
+                $service->setZendeskApi( $this->zendesk )
+                        ->createUser   ( $name, $email, false )
+        );
+        
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::createTicket
+     */
+    public function testCreateTicket()
+    {
+        $service = $this->apiService->setMethods( null )->getMock();
+        
+        $subject = 'My Printer Is On Fire';
+        $comment = array(
+                'body' => 'One of my idiot friends printed out that speaking printer joke so I set it on fire.'
+                );
+        $dataArray = array(
+                'subject' => $subject,
+                'comment' => $comment
+                );
+        $responseArray = array( 'mockresponse' );
+        
+        $this->zendesk
+            ->expects( $this->at( 0 ) )
+            ->method ( 'call' )
+            ->with   ( '/tickets', json_encode( $dataArray ), 'POST' )
+            ->will   ( $this->returnValue( $responseArray ) )
+        ;
+        $this->assertEquals(
+                $responseArray,
+                $service->setZendeskApi( $this->zendesk )
+                        ->createTicket   ( $dataArray )
         );
     }
     

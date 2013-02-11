@@ -64,13 +64,15 @@ class ApiService
      * Returns a json-decoded array from the response
      * @param string $name
      * @param string $email
+     * @param bool $verified
      * @return mixed return value of \zendesk::call
      */
-    public function createUser( $name, $email )
+    public function createUser( $name, $email, $verified = true )
     {
         $jsonArray = array(
                 'name' => $name,
-                'email' => $email
+                'email' => $email,
+                'verified' => $verified
                 );
         return $this->api->call( '/users' , json_encode( $jsonArray ), 'POST' );
     }
@@ -96,12 +98,14 @@ class ApiService
         return $this->_get( "/users/{$userId}/tickets/requested" );
     }
     
-    public function createTicketAsUser( $userId )
+    /**
+     * Creates a ticket as your current user
+     * @param array $ticketData associative array of fields to values
+     * @return array
+     */
+    public function createTicket( array $ticketData )
     {
-        $tempApi = new zendesk( $this->apiKey, $userId, $this->subDomain );
-        
-        $this->api = $prevApi;
-        return $response;
+        return $this->api->call( '/tickets', json_encode( $ticketData ), 'POST' );
     }
     
     /**
