@@ -10,6 +10,7 @@ require_once( __DIR__. '/../../Service/ApiService.php' );
 use MalwareBytes\ZendeskBundle\Service\ApiService;
 use \zendesk;
 use \ReflectionProperty;
+use \ReflectionMethod;
 /**
  * Tests for MalwareBytes\ZendeskBundle\Service\ApiService
  * @author relwell
@@ -26,15 +27,59 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
      */
     protected $zendesk;
     
+    /**
+     * Keeps track of subdomain, since zendesk API doesn't
+     * @var string
+     */
+    protected $subDomain;
+    
+    /**
+     * Api key for zendesk 
+     * @var string
+     */
+    protected $apiKey;
+    
+    /**
+     * User ID interacting with zendesk
+     * @var string
+     */
+    protected $user;
+    
     public function setUp()
     {
         $this->apiService = $this->getMockBuilder( '\MalwareBytes\ZendeskBundle\Service\ApiService' )
                                  ->disableOriginalConstructor();
         
+        $this->apiKey    = 'apiKey';
+        $this->subDomain = 'subdomain';
+        $this->user      = 'user';
+        
         $this->zendesk = $this->getMockBuilder( '\zendesk' )
-                              ->disableOriginalConstructor()
+                              ->setConstructorArgs( array( $this->apiKey, $this->subDomain, $this->user ) )
                               ->setMethods( array( 'call' ) )
                               ->getMock();
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::_get
+     */
+    public function test_get()
+    {
+        $service = $this->apiService->setMethods( null )->getMock();
+        $path = 'path';
+        $responseArray = array( 'foo' );
+        $this->zendesk
+            ->expects( $this->at( 0 ) )
+            ->method ( 'call' )
+            ->with   ( $path, '', 'GET' )
+            ->will   ( $this->returnValue( $responseArray ) )
+        ;
+        $_get = new ReflectionMethod( 'Malwarebytes\ZendeskBundle\Service\ApiService', '_get' );
+        $_get->setAccessible( true );
+        $this->assertEquals(
+                $responseArray,
+                $_get->invoke( $service->setZendeskApi( $this->zendesk ), $path )
+        );
     }
     
     /**
@@ -57,10 +102,86 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $this->zendesk
             ->expects( $this->at( 0 ) )
             ->method ( 'call' )
-            ->with   ( 'users', json_encode( $dataArray ), 'POST' )
+            ->with   ( '/users', json_encode( $dataArray ), 'POST' )
             ->will   ( $this->returnValue( $responseArray ) )
         ;
-        $service->setZendeskApi( $this->zendesk )
-                ->createUser   ( $name, $email );
+        $this->assertEquals(
+                $responseArray,
+                $service->setZendeskApi( $this->zendesk )
+                        ->createUser   ( $name, $email )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicketsRequestedByUser
+     */
+    public function testGetTicketsRequestedByUser()
+    {
+        $service = $this->apiService->setMethods( array( '_get' ) )->getMock();
+        $userId = 'userid';
+        $response = array( 'mock' );
+        $service
+            ->expects( $this->at( 0 ) )
+            ->method ( '_get' )
+            ->with   ( "/users/{$userId}/tickets/requested" )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $service->getTicketsRequestedByUser( $userId )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::userHasRequestedTickets 
+     */
+    public function testUserHasRequestedTicketsNoTickets()
+    {
+        $service = $this->apiService->setMethods( array( 'getTicketsRequestedByUser' ) )->getMock();
+        $userId = 'userid';
+        $service
+            ->expects( $this->at( 0 ) )
+            ->method ( 'getTicketsRequestedByUser' )
+            ->with   ( $userId )
+            ->will   ( $this->returnValue( array() ) )
+        ;
+        $this->assertFalse(
+                $service->userHasRequestedTickets( $userId )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::userHasRequestedTickets 
+     */
+    public function testUserHasRequestedTicketsWithTickets()
+    {
+        $service = $this->apiService->setMethods( array( 'getTicketsRequestedByUser' ) )->getMock();
+        $userId = 'userid';
+        $service
+            ->expects( $this->at( 0 ) )
+            ->method ( 'getTicketsRequestedByUser' )
+            ->with   ( $userId )
+            ->will   ( $this->returnValue( array( 'tickets' => array( array( 'here is one' ) ) ) ) )
+        ;
+        $this->assertTrue(
+                $service->userHasRequestedTickets( $userId )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::setZendeskApi
+     */
+    public function testSetZendeskApi()
+    {
+        $service = $this->apiService->setMethods( null )->getMock();
+        $this->assertEquals(
+                $service,
+                $service->setZendeskApi( $this->zendesk )
+        );
+        $this->assertAttributeEquals(
+                $this->apiKey,
+                'apiKey',
+                $service
+        );
     }
 }

@@ -18,7 +18,25 @@ class ApiService
     protected $api;
     
     /**
-     * Creates API wrapper 
+     * Keeps track of subdomain, since zendesk API doesn't
+     * @var string
+     */
+    protected $subDomain;
+    
+    /**
+     * Api key for zendesk 
+     * @var string
+     */
+    protected $apiKey;
+    
+    /**
+     * User ID interacting with zendesk
+     * @var string
+     */
+    protected $user;
+    
+    /**
+     * Creates API wrapper
      * @param string $apiKey
      * @param string $user
      * @param string $subDomain
@@ -34,7 +52,10 @@ class ApiService
      */
     public function setZendeskApi( \zendesk $zendesk )
     {
-        $this->api = $zendesk;
+        $this->api       = $zendesk;
+        $this->apiKey    = $zendesk->api_key;
+        $this->user      = $zendesk->user;
+        $this->subDomain = preg_replace( '/https:\/\/([^\.]+)\.*/', '$1', $zendesk->base );
         return $this;
     }
     
@@ -51,6 +72,45 @@ class ApiService
                 'name' => $name,
                 'email' => $email
                 );
-        return $this->api->call( 'users' , json_encode( $jsonArray ), 'POST' );
-    } 
+        return $this->api->call( '/users' , json_encode( $jsonArray ), 'POST' );
+    }
+    
+    /**
+     * Determines whether a given user ID has any tickets
+     * @param string $userId
+     * @return boolean
+     */
+    public function userHasRequestedTickets( $userId )
+    {
+        $response = $this->getTicketsRequestedByUser( $userId );
+        return !empty( $response['tickets'] );
+    }
+    
+    /**
+     * Returns an array of tickets the user requested
+     * @param string $userId
+     * @return array
+     */
+    public function getTicketsRequestedByUser( $userId )
+    {
+        return $this->_get( "/users/{$userId}/tickets/requested" );
+    }
+    
+    public function createTicketAsUser( $userId )
+    {
+        $tempApi = new zendesk( $this->apiKey, $userId, $this->subDomain );
+        
+        $this->api = $prevApi;
+        return $response;
+    }
+    
+    /**
+     * Wraps a very, very stupid API without default param values
+     * @param string $path
+     * @return mixed
+     */
+    protected function _get( $path )
+    {
+        return $this->api->call( $path, '', 'GET' );
+    }
 }
