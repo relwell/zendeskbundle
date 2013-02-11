@@ -65,7 +65,7 @@ class ApiService
      * @param string $name
      * @param string $email
      * @param bool $verified
-     * @return mixed return value of \zendesk::call
+     * @return array return value of \zendesk::call
      */
     public function createUser( $name, $email, $verified = true )
     {
@@ -99,6 +99,27 @@ class ApiService
     }
     
     /**
+     * Returns all tickets CCed to the given user ID
+     * @param string  $userId
+     * @return array
+     */
+    public function getTicketsCCedToUser( $userId )
+    {
+        return $this->_get( "/users/{$userId}/tickets/ccd" );
+    }
+    
+    /**
+     * Determines whether a user has any tickets CC'ed to them.
+     * @param string $userId
+     * @return boolean
+     */
+    public function userHasCCs( $userId )
+    {
+        $response = $this->getTicketsCCedToUser( $userId );
+        return !empty( $response['tickets'] );
+    }
+    
+    /**
      * Creates a ticket as your current user
      * @param array $ticketData associative array of fields to values
      * @return array
@@ -111,7 +132,7 @@ class ApiService
     /**
      * Wraps a very, very stupid API without default param values
      * @param string $path
-     * @return mixed
+     * @return array
      */
     protected function _get( $path )
     {

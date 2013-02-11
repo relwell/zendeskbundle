@@ -213,6 +213,62 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicketsCCedToUser
+     */
+    public function testGetTicketsCCedToUser()
+    {
+        $service = $this->apiService->setMethods( array( '_get' ) )->getMock();
+        $userId = 'userid';
+        $response = array( 'mock' );
+        $service
+            ->expects( $this->at( 0 ) )
+            ->method ( '_get' )
+            ->with   ( "/users/{$userId}/tickets/ccd" )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $service->getTicketsCCedToUser( $userId )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::userHasCCs 
+     */
+    public function testUserHasCCsNoTickets()
+    {
+        $service = $this->apiService->setMethods( array( 'getTicketsCCedToUser' ) )->getMock();
+        $userId = 'userid';
+        $service
+            ->expects( $this->at( 0 ) )
+            ->method ( 'getTicketsCCedToUser' )
+            ->with   ( $userId )
+            ->will   ( $this->returnValue( array() ) )
+        ;
+        $this->assertFalse(
+                $service->userHasCCs( $userId )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::userHasCCs 
+     */
+    public function testUserHasCCsWithTickets()
+    {
+        $service = $this->apiService->setMethods( array( 'getTicketsCCedToUser' ) )->getMock();
+        $userId = 'userid';
+        $service
+            ->expects( $this->at( 0 ) )
+            ->method ( 'getTicketsCCedToUser' )
+            ->with   ( $userId )
+            ->will   ( $this->returnValue( array( 'tickets' => array( array( 'here is one' ) ) ) ) )
+        ;
+        $this->assertTrue(
+                $service->userHasCCs( $userId )
+        );
+    }
+    
+    /**
      * @covers MalwareBytes\ZendeskBundle\Service\ApiService::setZendeskApi
      */
     public function testSetZendeskApi()
