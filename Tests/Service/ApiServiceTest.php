@@ -284,4 +284,79 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
                 $service
         );
     }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::addCommentToTicket
+     */
+    public function testAddCommentToTicket()
+    {
+        $service = $this->apiService->setMethods( null )->getMock();
+        $ticketId = 123;
+        $path = "/tickets/{$ticketId}";
+        $comment = 'This is my comment';
+        $data = array(
+                'ticket' => array(
+                        'comment' => array(
+                                'public' => false,
+                                'body'   => $comment
+                                )
+                        ) 
+                );
+        $response = array( 'response' );
+        $this->zendesk
+            ->expects( $this->once() )
+            ->method ( 'call' )
+            ->with   ( $path, json_encode( $data ), 'PUT' )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $service->setZendeskApi( $this->zendesk )->addCommentToTicket( $ticketId, $comment, false )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::_search
+     */
+    public function test_search()
+    {
+        $apiService = $this->apiService->setMethods( array( '_get' ) )->getMock();
+        $_search = new ReflectionMethod( 'MalwareBytes\ZendeskBundle\Service\ApiService', '_search' );
+        $_search->setAccessible( true );
+        
+        $queryString = 'foo:bar';
+        $path = "/search?" . http_build_query( array( 'query' => $queryString ) );
+        $response = array( 'my response' );
+        
+        $apiService
+            ->expects( $this->once() )
+            ->method ( '_get' )
+            ->with   ( $path )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $_search->invoke( $apiService, $queryString )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicketsAssignedToUser
+     */
+    public function testGetTicketsAssignedToUser()
+    {
+        $apiService = $this->apiService->setMethods( array( '_search' ) )->getMock();
+        $response = array( 'my response' );
+        $user = 'foo@bar.com';
+        $apiService
+            ->expects( $this->once() )
+            ->method ( '_search' )
+            ->with   ( sprintf( 'type:ticket assignee:%s', $user ) )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $apiService->getTicketsAssignedToUser( $user )
+        );
+    }
 }

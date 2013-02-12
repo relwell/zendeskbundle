@@ -120,13 +120,54 @@ class ApiService
     }
     
     /**
-     * Creates a ticket as your current user
+     * Creates a ticket as your current user.
      * @param array $ticketData associative array of fields to values
      * @return array
      */
     public function createTicket( array $ticketData )
     {
         return $this->api->call( '/tickets', json_encode( $ticketData ), 'POST' );
+    }
+
+    /**
+     * Adds a comment to the provided ticket ID.
+     * @param int $ticketId
+     * @param string $comment
+     * @param bool $public
+     * @return array
+     */
+    public function addCommentToTicket( $ticketId, $comment, $public = true )
+    {
+        $data = array(
+                'ticket' => array(
+                        'comment' => array(
+                                'public' => $public,
+                                'body'   => $comment
+                                )
+                        ) 
+                );
+        return $this->api->call( "/tickets/{$ticketId}", json_encode( $data ), 'PUT' );
+    }
+    
+    /**
+     * Allows us to search for a user name or ID.
+     * @param string $user
+     * @return array
+     */
+    public function getTicketsAssignedToUser( $user )
+    {
+        return $this->_search( sprintf( 'type:ticket assignee:%s', $user ) );
+    }
+    
+    /**
+     * Provides a common interface for searching via API.
+     * @param string $queryString
+     * @return array
+     */
+    protected function _search( $queryString )
+    {
+        $path = "/search?" . http_build_query( array( 'query' => $queryString ) );
+        return $this->_get( $path );
     }
     
     /**
