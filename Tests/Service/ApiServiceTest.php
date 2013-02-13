@@ -286,32 +286,93 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::addCommentToTicket
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::updateTicket
      */
-    public function testAddCommentToTicket()
+    public function testUpdateTicket()
     {
         $service = $this->apiService->setMethods( null )->getMock();
         $ticketId = 123;
-        $path = "/tickets/{$ticketId}";
-        $comment = 'This is my comment';
-        $data = array(
-                'ticket' => array(
-                        'comment' => array(
-                                'public' => false,
-                                'body'   => $comment
-                                )
-                        ) 
-                );
+        $data = array( 'foo' => 'bar' );
+        $preparedData = array( 'ticket' => $data );
         $response = array( 'response' );
         $this->zendesk
             ->expects( $this->once() )
             ->method ( 'call' )
-            ->with   ( $path, json_encode( $data ), 'PUT' )
+            ->with   ( "/tickets/{$ticketId}", json_encode( $preparedData ), 'PUT' )
             ->will   ( $this->returnValue( $response ) )
         ;
         $this->assertEquals(
                 $response,
-                $service->setZendeskApi( $this->zendesk )->addCommentToTicket( $ticketId, $comment, false )
+                $service->setZendeskApi( $this->zendesk )->updateTicket( $ticketId, $data )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::addCommentToTicket
+     */
+    public function testAddCommentToTicket()
+    {
+        $service = $this->apiService->setMethods( array( 'updateTicket' ) )->getMock();
+        $ticketId = 123;
+        $comment = 'This is my comment';
+        $data = array(
+                'comment' => array(
+                        'public' => false,
+                        'body'   => $comment
+                        )
+                );
+        $response = array( 'response' );
+        $service
+            ->expects( $this->once() )
+            ->method ( 'updateTicket' )
+            ->with   ( $ticketId, $data )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $service->addCommentToTicket( $ticketId, $comment, false )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::assignTicketToUser
+     */
+    public function testAssignTicketToUser()
+    {
+        $service = $this->apiService->setMethods( array( 'updateTicket' ) )->getMock();
+        $response = array( 'response' );
+        $userId = 123;
+        $ticketId = 234;
+        $service
+            ->expects( $this->once() )
+            ->method ( 'updateTicket' )
+            ->with   ( $ticketId, array( 'assignee_id' => $userId ) )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $service->assignTicketToUser( $ticketId, $userId )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::assignTicketToGroup
+     */
+    public function testAssignTicketToGroup()
+    {
+        $service = $this->apiService->setMethods( array( 'updateTicket' ) )->getMock();
+        $response = array( 'response' );
+        $groupId = 123;
+        $ticketId = 234;
+        $service
+            ->expects( $this->once() )
+            ->method ( 'updateTicket' )
+            ->with   ( $ticketId, array( 'group_id' => $groupId ) )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $service->assignTicketToGroup( $ticketId, $groupId )
         );
     }
     

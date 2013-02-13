@@ -126,7 +126,18 @@ class ApiService
      */
     public function createTicket( array $ticketData )
     {
+        //@todo add validation -- ticket needs requester id
         return $this->api->call( '/tickets', json_encode( $ticketData ), 'POST' );
+    }
+    
+    /**
+     * Provides a common interface for updating data in a ticket.
+     * @param int $ticketId
+     * @param array $data -- just the fields for that particular ticket
+     */
+    public function updateTicket( $ticketId, array $data )
+    {
+        return $this->api->call( "/tickets/{$ticketId}", json_encode( array( 'ticket' => $data ) ), 'PUT' );
     }
 
     /**
@@ -138,15 +149,41 @@ class ApiService
      */
     public function addCommentToTicket( $ticketId, $comment, $public = true )
     {
-        $data = array(
-                'ticket' => array(
+        return $this->updateTicket(
+                $ticketId,
+                array(
                         'comment' => array(
                                 'public' => $public,
                                 'body'   => $comment
                                 )
-                        ) 
+                        )
                 );
-        return $this->api->call( "/tickets/{$ticketId}", json_encode( $data ), 'PUT' );
+    }
+    
+    /**
+     * Updates a ticket with the assignee user ID.
+     * @param int $ticketId
+     * @param int $userId
+     */
+    public function assignTicketToUser( $ticketId, $userId )
+    {
+        return $this->updateTicket(
+                $ticketId,
+                array( 'assignee_id' => $userId )
+                );
+    }
+    
+    /**
+     * Updates a ticket with the provided group ID.
+     * @param int $ticketId
+     * @param int $groupId
+     */
+    public function assignTicketToGroup( $ticketId, $groupId )
+    {
+        return $this->updateTicket(
+                $ticketId,
+                array( 'group_id' => $groupId )
+                );
     }
     
     /**
