@@ -402,6 +402,26 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicket
+     */
+    public function testGetTicket()
+    {
+        $apiService = $this->apiService->setMethods( array( '_get' ) )->getMock();
+        $response = array( 'response' );
+        $ticketId = 123;
+        $apiService
+            ->expects( $this->once() )
+            ->method ( '_get' )
+            ->with   ( "/tickets/{$ticketId}" )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $apiService->getTicket( $ticketId )
+        );
+    }
+    
+    /**
      * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicketsAssignedToUser
      */
     public function testGetTicketsAssignedToUser()

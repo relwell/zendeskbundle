@@ -131,6 +131,16 @@ class ApiService
     }
     
     /**
+     * Returns an array representing ticket fields
+     * @param int $ticketId
+     * @return array
+     */
+    public function getTicket( $ticketId )
+    {
+        return $this->_get( "/tickets/{$ticketId}" );
+    }
+    
+    /**
      * Provides a common interface for updating data in a ticket.
      * @param int $ticketId
      * @param array $data -- just the fields for that particular ticket
