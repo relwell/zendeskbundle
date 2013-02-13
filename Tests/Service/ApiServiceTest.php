@@ -359,4 +359,24 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
                 $apiService->getTicketsAssignedToUser( $user )
         );
     }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicketsForGroup
+     */
+    public function testGetTicketsForGroup()
+    {
+        $apiService = $this->apiService->setMethods( array( '_search' ) )->getMock();
+        $response = array( 'my response' );
+        $group = 'quality assurance';
+        $apiService
+            ->expects( $this->once() )
+            ->method ( '_search' )
+            ->with   ( sprintf( 'type:ticket group:%s', $group ) )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $apiService->getTicketsForGroup( $group )
+        );
+    }
 }

@@ -160,6 +160,16 @@ class ApiService
     }
     
     /**
+     * Searches for tickets belonging to a particular group.
+     * @param string $group
+     * @return array
+     */
+    public function getTicketsForGroup( $group )
+    {
+        return $this->_search( sprintf( 'type:ticket group:%s', $group ) );
+    }
+    
+    /**
      * Provides a common interface for searching via API.
      * @param string $queryString
      * @return array
