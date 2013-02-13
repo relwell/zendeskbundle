@@ -149,6 +149,31 @@ class ApiService
     {
         return $this->api->call( "/tickets/{$ticketId}", json_encode( array( 'ticket' => $data ) ), 'PUT' );
     }
+    
+    /**
+     * Sets the collaborators on a provided ticket. This overwrites the collaborator IDs for that ticket.
+     * @param int $ticketId
+     * @param array $collaboratorIds
+     */
+    public function setTicketCollaborators( $ticketId, array $collaboratorIds )
+    {
+        return $this->updateTicket( $ticketId, array( 'collaborator_ids' => $collaboratorIds ) );
+    }
+    
+    /**
+     * Allows us to push a collaborator ID onto the existing list of collaborator IDs. 
+     * @param int $ticketId
+     * @param int $collaboratorId
+     */
+    public function addCollaboratorToTicket( $ticketId, $collaboratorId )
+    {
+        $ticketResponse = $this->getTicket( $ticketId );
+        $ticket = $ticketResponse['ticket'];
+        $collaboratorIds = empty( $ticket['collaborator_ids'] ) 
+                         ? array( $collaboratorId ) 
+                         : array_merge( $ticket['collaborator_ids'], array( $collaboratorId ) );
+        return $this->setTicketCollaborators( $ticketId, array_unique( $collaboratorIds ) );
+    }
 
     /**
      * Adds a comment to the provided ticket ID.

@@ -460,4 +460,54 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
                 $apiService->getTicketsForGroup( $group )
         );
     }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::setTicketCollaborators
+     */
+    public function testSetTicketCollaborators()
+    {
+        $apiService = $this->apiService->setMethods( array( 'updateTicket' ) )->getMock();
+        $ticketId = 123;
+        $collaboratorIds = array( 456, 789 );
+        $response = array( 'my response' );
+        $apiService
+            ->expects( $this->once() )
+            ->method ( 'updateTicket' )
+            ->with   ( $ticketId, array( 'collaborator_ids' => $collaboratorIds ) )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $apiService->setTicketCollaborators( $ticketId, $collaboratorIds )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::addCollaboratorToTicket
+     */
+    public function testAddCollaboratorToTicket()
+    {
+        $apiService = $this->apiService->setMethods( array( 'getTicket', 'setTicketCollaborators' ) )->getMock();
+        $ticketId = 123;
+        $collaboratorIds = array( 456, 789 );
+        $ticketResponse = array( 'ticket' => array( 'id' => $ticketId, 'collaborator_ids' => $collaboratorIds ) );
+        $collaboratorId = 987;
+        $response = array( 'my response' );
+        $apiService
+            ->expects( $this->once() )
+            ->method ( 'getTicket' )
+            ->with   ( $ticketId )
+            ->will   ( $this->returnValue( $ticketResponse ) )
+        ;
+        $apiService
+            ->expects( $this->once() )
+            ->method ( 'setTicketCollaborators' )
+            ->with   ( $ticketId, array_merge( $collaboratorIds, array( $collaboratorId ) ) )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $apiService->addCollaboratorToTicket( $ticketId, $collaboratorId )
+        );
+    }
 }
