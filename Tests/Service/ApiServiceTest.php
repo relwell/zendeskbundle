@@ -510,4 +510,24 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
                 $apiService->addCollaboratorToTicket( $ticketId, $collaboratorId )
         );
     }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicketUntouchedSinceTime
+     */
+    public function testGetTicketsUntouchedSinceTime()
+    {
+        $apiService = $this->apiService->setMethods( array( '_search' ) )->getMock();
+        $response = array( 'my response' );
+        $timestamp = time() - 43200;
+        $apiService
+            ->expects( $this->any() )
+            ->method ( '_search' )
+            ->with   ( sprintf( 'type:ticket updated_at<%s', gmdate( 'Y-m-d\TH:i:s\Z', $timestamp ) ) )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $apiService->getTicketsUntouchedSinceTime( $timestamp )
+        );
+    }
 }
