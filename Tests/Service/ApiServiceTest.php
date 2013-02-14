@@ -533,4 +533,23 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
                 $apiService->getTicketsUntouchedSinceTime( $timestamp )
         );
     }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getCurrentUser
+     */
+    public function testGetCurrentUser()
+    {
+        $service = $this->apiService->setMethods( array( '_get' ) )->getMock();
+        $response = array( 'mock' );
+        $service
+            ->expects( $this->at( 0 ) )
+            ->method ( '_get' )
+            ->with   ( "/users/me" )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $service->getCurrentUser()
+        );
+    }
 }

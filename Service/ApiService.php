@@ -133,6 +133,15 @@ class ApiService
     }
     
     /**
+     * Returns information about the current user in an array format.
+     * @return array
+     */
+    public function getCurrentUser()
+    {
+        return $this->_get( "/users/me" );
+    }
+    
+    /**
      * Returns an array representing ticket fields
      * @param int $ticketId
      * @return array
