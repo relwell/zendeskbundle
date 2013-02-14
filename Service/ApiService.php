@@ -246,13 +246,12 @@ class ApiService
     /**
      * Allows you to select tickets that haven't been updated since a certain time.
      * So for instance, if you want to get tickets that have not been touched for a day, 
-     * you would want to pass something like time() - 86400. We're doing in the last 
-     * 12 hours, which is time() - 43200.
+     * you would want to pass something like time() - 86400.
      * @param int $time 
      */
-    public function getTicketsUntouchedSinceTime( $time = null )
+    public function getTicketsUntouchedSinceTime( $time )
     {
-        $timestamp = gmdate( 'Y-m-d\TH:i:s\Z', $time ?: time() - 43200 );
+        $timestamp = gmdate( 'Y-m-d\TH:i:s\Z', $time );
         return $this->_search( sprintf( 'type:ticket updated_at<%s', $timestamp ) );
     }
     
