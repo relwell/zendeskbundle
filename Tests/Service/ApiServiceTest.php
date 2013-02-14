@@ -142,17 +142,20 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
                 'comment' => $comment
                 );
         $responseArray = array( 'mockresponse' );
-        
+        $service->setZendeskApi( $this->zendesk );
+        try {
+            $service->createTicket( $dataArray );
+        } catch ( \UnexpectedValueException $e ) { }
+        $dataArray['requester_id'] = 123;
         $this->zendesk
-            ->expects( $this->at( 0 ) )
+            ->expects( $this->once() )
             ->method ( 'call' )
             ->with   ( '/tickets', json_encode( $dataArray ), 'POST' )
             ->will   ( $this->returnValue( $responseArray ) )
-        ;
+        ; 
         $this->assertEquals(
                 $responseArray,
-                $service->setZendeskApi( $this->zendesk )
-                        ->createTicket   ( $dataArray )
+                $service->createTicket( $dataArray )
         );
     }
     
