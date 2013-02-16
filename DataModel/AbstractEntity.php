@@ -1,22 +1,28 @@
 <?php
 /**
- * Class definition for Malwarebytes\ZendeskBundle\Model\ModelAbstract
+ * Class definition for Malwarebytes\ZendeskBundle\DataModel\AbstractEntity
  */
-namespace Malwarebytes\ZendeskBundle\Model;
+namespace Malwarebytes\ZendeskBundle\DataModel;
 use Malwarebytes\ZendeskBundle\Service\ApiService;
 
 /**
- * Provides a common API for handling models.
+ * Provides a common API for handling specific instances within our data model.
  * @author relwell
  *
  */
-abstract class AbstractModel implements \ArrayAccess
+abstract class AbstractEntity implements \ArrayAccess
 {
     /**
      * Associative array mapping fields to value.
      * @var array
      */
     protected $_fields = array();
+    
+    /**
+     * These are the fields that we cannot mutate.
+     * @var array
+     */
+    protected $_readOnlyFields = array();
     
     /**
      * Create an instance using the provided fields.
@@ -84,7 +90,9 @@ abstract class AbstractModel implements \ArrayAccess
      */
     public function offsetSet( $offset, $value )
     {
-        $this->_fields[$offset] = $value;
+        if (! in_array( $offset, $this->_readOnlyFields ) ) {
+            $this->_fields[$offset] = $value;
+        }
     }
 
     /** 
@@ -93,6 +101,17 @@ abstract class AbstractModel implements \ArrayAccess
      */
     public function offsetUnset( $offset )
     {
-        unset( $this->_fields[$offset] );
+        if (! in_array( $offset, $this->_readOnlyFields ) ) {
+            unset( $this->_fields[$offset] );
+        }
+    }
+    
+    /**
+     * Returns fields and their values.
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->_fields;
     }
 }

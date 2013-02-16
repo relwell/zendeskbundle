@@ -89,6 +89,15 @@ class ApiService
     }
     
     /**
+     * Returns tickets in a default sort (oldest to newest).
+     * @return array
+     */
+    public function getTickets()
+    {
+        return $this->_get( "/tickets" );
+    }
+    
+    /**
      * Returns an array of tickets the user requested
      * @param string $userId
      * @return array
