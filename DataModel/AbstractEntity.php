@@ -30,7 +30,25 @@ abstract class AbstractEntity implements \ArrayAccess
      */
     public function __construct( array $fields = array() )
     {
-        $this->_fields = $fields;
+        $this->setFields( $fields, false );
+    }
+    
+    /**
+     * Allows us to set a bunch of fields 
+     * @param array $fields
+     * @param bool $integrityCheck set to false if you want to allow overwriting read-only fields.
+     * @return AbstractEntity
+     */
+    public function setFields( array $fields = array(), $integrityCheck = true )
+    {
+        if ( $integrityCheck ) {
+            foreach ( $fields as $field => $value ) {
+                $this->offsetSet( $field, $value );
+            }
+        } else {
+            $this->_fields = $fields;
+        }
+        return $this;
     }
     
     /**

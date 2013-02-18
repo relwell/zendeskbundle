@@ -31,14 +31,34 @@ class Repository extends AbstractRepository
         return $entities;
     }
     
+    /**
+     * Creates a ticket and resets the ticket entity with the returned field values.
+     * @see \Malwarebytes\ZendeskBundle\DataModel\AbstractRepository::_create()
+     * @param AbstractEntity $instance
+     * @return Entity
+     */
     protected function _create( AbstractEntity $instance )
     {
-        
+        $response = $this->_apiService->createTicket( $instance->toArray() );
+        if ( $response['ticket'] ) {
+            $instance->setFields( $response['ticket'], true );
+        }
+        return $instance;
     }
     
+    /**
+     * Updates a ticket and resets the ticket entity with the returned field values.
+     * @see \Malwarebytes\ZendeskBundle\DataModel\AbstractRepository::_create()
+     * @param AbstractEntity $instance
+     * @return Entity
+     */
     protected function _update( AbstractEntity $instance )
     {
-        
+        $response = $this->_apiService->updateTicket( $instance['id'], $instance->toArray() );
+        if ( $response['ticket'] ) {
+            $instance->setFields( $response['ticket'], true );
+        }
+        return $instance;
     }
     
     /**
