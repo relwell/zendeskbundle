@@ -3,6 +3,7 @@
  * Class definition for \Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository
  */
 namespace Malwarebytes\ZendeskBundle\DataModel\Ticket;
+use Malwarebytes\ZendeskBundle\DataModel\AbstractEntity;
 use Malwarebytes\ZendeskBundle\DataModel\AbstractRepository;
 use Malwarebytes\ZendeskBundle\Service\ApiService;
 /**
@@ -26,7 +27,7 @@ class Repository extends AbstractRepository
         } else if (! empty( $response['tickets'] ) ) {
             foreach ( $response['tickets'] as $ticket )
             {
-                $entites[] = new Entity( $ticket );
+                $entities[] = new Entity( $ticket );
             }
         }
         return $entities;
