@@ -89,6 +89,15 @@ class ApiService
     }
     
     /**
+     * Returns tickets in a default sort (oldest to newest).
+     * @return array
+     */
+    public function getTickets()
+    {
+        return $this->_get( "/tickets" );
+    }
+    
+    /**
      * Returns an array of tickets the user requested
      * @param string $userId
      * @return array
@@ -262,6 +271,17 @@ class ApiService
     {
         $timestamp = gmdate( 'Y-m-d\TH:i:s\Z', $time );
         return $this->_search( sprintf( 'type:ticket updated_at<%s', $timestamp ) );
+    }
+    
+    /**
+     * Function-agnostic way of returning a pagination URL.
+     * @param string $pageUrl
+     * @return array
+     */
+    public function getNextPage( $pageUrl )
+    {
+        $parsed = \parse_url( $pageUrl );
+        return $this->_get( $parsed['path'] . '?' . $parsed['query'] );
     }
     
     /**
