@@ -70,7 +70,7 @@ class Repository extends AbstractRepository
      */
     public function getByDefaultSort()
     {
-        return $this->_buildFromResponse( $this->apiService->getTickets() );
+        return $this->_buildPaginatorFromResponse( $this->_apiService->getTickets() );
     }
     
     /**
