@@ -61,7 +61,7 @@ abstract class AbstractEntity implements \ArrayAccess
      */
     public function exists()
     {
-        return !empty( $this->_data[ $this->getPrimaryKey() ] ); 
+        return $this->offsetExists( $this->getPrimaryKey() ); 
     }
     
     /**
@@ -71,7 +71,7 @@ abstract class AbstractEntity implements \ArrayAccess
      */
     public function __get( $name )
     {
-        return $this->{$name} ?: $this->offsetGet( $name );
+        return property_exists( $this, $name ) ? $this->{$name} : $this->offsetGet( $name );
     }
     
     /**
@@ -85,8 +85,10 @@ abstract class AbstractEntity implements \ArrayAccess
     }
     
     /** 
-     * (non-PHPdoc)
+     * Whether a field has a value
      * @see ArrayAccess::offsetExists()
+     * @param string $offset
+     * @return bool
      */
     public function offsetExists( $offset )
     {
@@ -94,17 +96,21 @@ abstract class AbstractEntity implements \ArrayAccess
     }
 
     /**
-     * (non-PHPdoc)
+     * Returns value for a field.
      * @see ArrayAccess::offsetGet()
+     * @param string $offset
+     * @return mixed
      */
     public function offsetGet( $offset )
     {
-        return !empty( $this->_fields[$offset] ) ? $this->_fields[$offset] : null;
+        return $this->offsetExists( $offset ) ? $this->_fields[$offset] : null;
     }
 
     /** 
-     * (non-PHPdoc)
+     * Sets a value for our fields.
      * @see ArrayAccess::offsetSet()
+     * @param string $offset
+     * @param mixed $value
      */
     public function offsetSet( $offset, $value )
     {
