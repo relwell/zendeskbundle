@@ -1,8 +1,8 @@
 <?php
 /**
- * Class definition for Malwarebytes\Zendesk\DataModel\Paginator
+ * Class definition for Malwarebytes\ZendeskBundle\DataModel\Paginator
  */
-namespace Malwarebytes\Zendesk\DataModel;
+namespace Malwarebytes\ZendeskBundle\DataModel;
 use \ArrayIterator;
 use \Iterator;
 /**

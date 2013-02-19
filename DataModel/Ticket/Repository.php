@@ -19,6 +19,7 @@ class Repository extends AbstractRepository
      */
     protected function _buildFromResponse( array $response )
     {
+        $this->_currentResponse = $response;
         $entities = array();
         if (! empty( $response['ticket'] ) ) {
             $entities[] = new Entity( $response['ticket'] );

@@ -571,4 +571,24 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
                 $service->getCurrentUser()
         );
     }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getNextPage
+     */
+    public function testGetNextPage()
+    {
+        $service = $this->apiService->setMethods( array( '_get' ) )->getMock();
+        $response = array( 'mock' );
+        $url = 'http://foo.zendesk.com/users/whatever?page=2';
+        $service
+            ->expects( $this->at( 0 ) )
+            ->method ( '_get' )
+            ->with   ( "/users/whatever?page=2" )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $service->getNextPage( $url )
+        );
+    }
 }

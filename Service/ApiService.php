@@ -274,6 +274,17 @@ class ApiService
     }
     
     /**
+     * Function-agnostic way of returning a pagination URL.
+     * @param string $pageUrl
+     * @return array
+     */
+    public function getNextPage( $pageUrl )
+    {
+        $parsed = \parse_url( $pageUrl );
+        return $this->_get( $parsed['path'] . '?' . $parsed['query'] );
+    }
+    
+    /**
      * Provides a common interface for searching via API.
      * @param string $queryString
      * @return array

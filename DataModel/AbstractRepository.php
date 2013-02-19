@@ -70,6 +70,7 @@ abstract class AbstractRepository
      */
     protected function _buildPaginatorFromResponse( array $response )
     {
+        $this->_currentResponse = $response;
         $entities = $this->_buildFromResponse( $response );
         $nextPage = empty( $this->_currentResponse['next_page'] ) ? null : $this->_currentResponse['next_page'];
         return new Paginator( $this, $entities, $nextPage );
@@ -102,13 +103,11 @@ abstract class AbstractRepository
         $entities = array();
         $nextPage = $paginator->getNextPage();
         if ( $nextPage !== null ) {
-            //@todo I bet you we want curl here
-            $response = file_get_contents( $nextPage );
-            $entities = $this->_buildFromResponse( json_decode( $response ) );
-            $paginator->setEntities( $entities );
+            $entities = $this->_buildFromResponse( $this->_apiService->getNextPage( $nextPage ) );
             $nextPage = empty( $this->_currentResponse['next_page'] ) ? null : $this->_currentResponse['next_page'];
-            $paginator->setNextPage( $nextPage );
+            $paginator->setEntities( $entities )
+                      ->setNextPage( $nextPage );
         }
-        return empty( $entities );
+        return !empty( $entities );
     }
 }
