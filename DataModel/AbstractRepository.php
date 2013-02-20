@@ -36,6 +36,9 @@ abstract class AbstractRepository
     public function save( AbstractEntity $instance )
     {
         if ( $instance->exists() ) {
+            if ( $instance->isIncomplete() ) {
+                throw new \Exception( 'Violated integrity check for completeness on existing instance.' );
+            }
             return $this->_update( $instance );
         } else {
             return $this->_create( $instance );

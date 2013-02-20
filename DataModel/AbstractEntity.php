@@ -25,6 +25,12 @@ abstract class AbstractEntity implements \ArrayAccess
     protected $_readOnlyFields = array();
     
     /**
+     * These fields are required for a well-formed instance.
+     * @var array
+     */
+    protected $_mandatoryFields = array();
+    
+    /**
      * Create an instance using the provided fields.
      * @param array $fields
      */
@@ -62,6 +68,15 @@ abstract class AbstractEntity implements \ArrayAccess
     public function exists()
     {
         return $this->offsetExists( $this->getPrimaryKey() ); 
+    }
+    
+    /**
+     * Determines whether an instance contains all mandatory fields.
+     * @return bool
+     */
+    public function isIncomplete()
+    {
+        return \array_intersect_key( \array_flip( $this->_mandatoryFields ), $this->_fields ) != \array_flip( $this->_mandatoryFields ); 
     }
     
     /**

@@ -274,6 +274,25 @@ class ApiService
     }
     
     /**
+     * Returns a response for the default users service.
+     * @return array
+     */
+    public function getUsers()
+    {
+        return $this->_get( "/users" );
+    }
+    
+    /**
+     * Returns a response array for a particular user ID.
+     * @param int $id
+     * @return array
+     */
+    public function getUserById( $id )
+    {
+        return $this->_get( "/users/$id" );
+    }
+    
+    /**
      * Function-agnostic way of returning a pagination URL.
      * @param string $pageUrl
      * @return array

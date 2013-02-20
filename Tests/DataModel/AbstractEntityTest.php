@@ -253,4 +253,27 @@ class AbstractEntityTest extends \PHPUnit_Framework_TestCase
                 $entity->toArray()
         );
     }
+    
+    /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::isIncomplete
+     */
+    public function testIsIncomplete()
+    {
+        $entity = $this->entity->setMethods( array( null ) )->getMockForAbstractClass();
+        $fieldsRefl = new ReflectionProperty( '\Malwarebytes\ZendeskBundle\DataModel\AbstractEntity', '_fields' );
+        $fieldsRefl->setAccessible( true );
+        $fieldsRefl->setValue( $entity, array( 'id' => 123, 'foo' => 'bar', 'baz' => 'qux' ) );
+        $mfieldsRefl = new ReflectionProperty( '\Malwarebytes\ZendeskBundle\DataModel\AbstractEntity', '_mandatoryFields' );
+        $mfieldsRefl->setAccessible( true );
+        $mfieldsRefl->setValue( $entity, array( 'id', 'foo', 'flerg' ) );
+        $this->assertTrue(
+                $entity->isIncomplete(),
+                'Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::isIncomplete should return true if a mandatory field is not valuated'
+        );
+        $fieldsRefl->setValue( $entity, array( 'id' => 123, 'foo' => 'bar', 'baz' => 'qux', 'flerg' => 'blarg' ) );
+        $this->assertFalse(
+                $entity->isIncomplete(),
+                'Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::isIncomplete should return false if all mandatory fields are valuated'
+        );
+    }
 }

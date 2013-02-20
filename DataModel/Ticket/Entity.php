@@ -8,6 +8,10 @@ use Malwarebytes\ZendeskBundle\Service\ApiService;
 
 class Entity extends AbstractEntity
 {
+    /**
+     * These fields can't be changed.
+     * @var array
+     */
     protected $_readOnlyFields = array(
             'id', 
             'url',
@@ -22,6 +26,19 @@ class Entity extends AbstractEntity
             'updated_at'
             );
     
+    /**
+     * These fields are required.
+     * @var array
+     */
+    protected $_mandatoryFields = array(
+            'requester_id',
+            );
+    
+    /**
+     * Primary key is id.
+     * @see \Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::getPrimaryKey()
+     * @return string
+     */
     public function getPrimaryKey() {
         return 'id';
     }

@@ -199,6 +199,25 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getUsers
+     */
+    public function testGetUsers()
+    {
+        $service = $this->apiService->setMethods( array( '_get' ) )->getMock();
+        $response = array( 'mock' );
+        $service
+            ->expects( $this->at( 0 ) )
+            ->method ( '_get' )
+            ->with   ( "/users" )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $service->getUsers()
+        );
+    }
+    
+    /**
      * @covers MalwareBytes\ZendeskBundle\Service\ApiService::userHasRequestedTickets 
      */
     public function testUserHasRequestedTicketsNoTickets()
@@ -440,6 +459,26 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
                 $response,
                 $apiService->getTicket( $ticketId )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getUserById
+     */
+    public function testGetUserById()
+    {
+        $apiService = $this->apiService->setMethods( array( '_get' ) )->getMock();
+        $response = array( 'response' );
+        $userId = 123;
+        $apiService
+            ->expects( $this->once() )
+            ->method ( '_get' )
+            ->with   ( "/users/{$userId}" )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $apiService->getUserById( $userId )
         );
     }
     
