@@ -7,12 +7,12 @@ namespace Malwarebytes\ZendeskBundle\Tests\Service;
 
 require_once( __DIR__. '/../../Service/ApiService.php' );
 
-use MalwareBytes\ZendeskBundle\Service\ApiService;
+use Malwarebytes\ZendeskBundle\Service\ApiService;
 use \zendesk;
 use \ReflectionProperty;
 use \ReflectionMethod;
 /**
- * Tests for MalwareBytes\ZendeskBundle\Service\ApiService
+ * Tests for Malwarebytes\ZendeskBundle\Service\ApiService
  * @author relwell
  */
 class ApiServiceTest extends \PHPUnit_Framework_TestCase
@@ -47,7 +47,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->apiService = $this->getMockBuilder( '\MalwareBytes\ZendeskBundle\Service\ApiService' )
+        $this->apiService = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\Service\ApiService' )
                                  ->disableOriginalConstructor();
         
         $this->apiKey    = 'apiKey';
@@ -61,7 +61,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::_get
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::_get
      */
     public function test_get()
     {
@@ -83,7 +83,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::createUser
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::createUser
      */
     public function testCreateUser()
     {
@@ -134,7 +134,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::createTicket
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::createTicket
      */
     public function testCreateTicket()
     {
@@ -167,7 +167,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicketsRequestedByUser
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getTicketsRequestedByUser
      */
     public function testGetTicketsRequestedByUser()
     {
@@ -187,7 +187,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTickets
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getTickets
      */
     public function testGetTickets()
     {
@@ -206,7 +206,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getUsers
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getUsers
      */
     public function testGetUsers()
     {
@@ -225,7 +225,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::userHasRequestedTickets 
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::userHasRequestedTickets 
      */
     public function testUserHasRequestedTicketsNoTickets()
     {
@@ -243,7 +243,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::userHasRequestedTickets 
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::userHasRequestedTickets 
      */
     public function testUserHasRequestedTicketsWithTickets()
     {
@@ -261,7 +261,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicketsCCedToUser
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getTicketsCCedToUser
      */
     public function testGetTicketsCCedToUser()
     {
@@ -281,7 +281,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::userHasCCs 
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::userHasCCs 
      */
     public function testUserHasCCsNoTickets()
     {
@@ -299,7 +299,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::userHasCCs 
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::userHasCCs 
      */
     public function testUserHasCCsWithTickets()
     {
@@ -317,7 +317,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::setZendeskApi
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::setZendeskApi
      */
     public function testSetZendeskApi()
     {
@@ -334,7 +334,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::updateTicket
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::updateTicket
      */
     public function testUpdateTicket()
     {
@@ -356,7 +356,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::updateUser
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::updateUser
      */
     public function testUpdateUser()
     {
@@ -378,7 +378,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::addCommentToTicket
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::addCommentToTicket
      */
     public function testAddCommentToTicket()
     {
@@ -405,7 +405,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::assignTicketToUser
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::assignTicketToUser
      */
     public function testAssignTicketToUser()
     {
@@ -426,7 +426,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::assignTicketToGroup
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::assignTicketToGroup
      */
     public function testAssignTicketToGroup()
     {
@@ -447,12 +447,12 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::_search
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::_search
      */
     public function test_search()
     {
         $apiService = $this->apiService->setMethods( array( '_get' ) )->getMock();
-        $_search = new ReflectionMethod( 'MalwareBytes\ZendeskBundle\Service\ApiService', '_search' );
+        $_search = new ReflectionMethod( 'Malwarebytes\ZendeskBundle\Service\ApiService', '_search' );
         $_search->setAccessible( true );
         
         $queryString = 'foo:bar';
@@ -472,7 +472,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicket
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getTicket
      */
     public function testGetTicket()
     {
@@ -492,7 +492,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getUserById
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getUserById
      */
     public function testGetUserById()
     {
@@ -512,7 +512,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicketsAssignedToUser
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getTicketsAssignedToUser
      */
     public function testGetTicketsAssignedToUser()
     {
@@ -532,7 +532,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicketsForGroup
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getTicketsForGroup
      */
     public function testGetTicketsForGroup()
     {
@@ -552,7 +552,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::setTicketCollaborators
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::setTicketCollaborators
      */
     public function testSetTicketCollaborators()
     {
@@ -573,7 +573,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::addCollaboratorToTicket
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::addCollaboratorToTicket
      */
     public function testAddCollaboratorToTicket()
     {
@@ -602,7 +602,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getTicketUntouchedSinceTime
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getTicketUntouchedSinceTime
      */
     public function testGetTicketsUntouchedSinceTime()
     {
@@ -622,7 +622,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getCurrentUser
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getCurrentUser
      */
     public function testGetCurrentUser()
     {
@@ -641,7 +641,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::getNextPage
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getNextPage
      */
     public function testGetNextPage()
     {
@@ -657,6 +657,26 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
                 $response,
                 $service->getNextPage( $url )
+        );
+    }
+    
+    /**
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::findUserByNameAndEmail
+     */
+    public function testFindUserByNameAndEmail() {
+        $apiService = $this->apiService->setMethods( array( '_search' ) )->getMock();
+        $response = array( 'my response' );
+        $email = 'foo@bar.com';
+        $name = 'foo bar';
+        $apiService
+            ->expects( $this->once() )
+            ->method ( '_search' )
+            ->with   ( sprintf( 'type:user name:"%s" email:%s', $name, $email ) )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $apiService->findUserByNameAndEmail( $name, $email )
         );
     }
 }

@@ -158,6 +158,17 @@ class ApiService
     }
     
     /**
+     * Asks Zendesk for a user matching the provided credentials.
+     * @param string $name
+     * @param string $email
+     * @return array
+     */
+    public function findUserByNameAndEmail( $name, $email )
+    {
+        return $this->_search( sprintf( 'type:user name:"%s" email:%s', $name, $email ) );
+    }
+    
+    /**
      * Returns an array representing ticket fields
      * @param int $ticketId
      * @return array

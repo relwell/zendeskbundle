@@ -229,4 +229,46 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
                 $this->repo->getById( 123 )
         );
     }
+    
+    /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\User\Repository::getForNameAndEmail
+     */
+    public function testGetForNameAndEmail()
+    {
+        $this->_configure( array( 'findUserByNameAndEmail', 'createUser' ), array( '_buildFromResponse' ) );
+        $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
+                           ->disableOriginalConstructor()
+                           ->getMock();
+        $name = 'Joe Blow';
+        $email = 'joe@blow.com';
+        $mockResponse = array( 'response' );
+        $this->apiService
+            ->expects( $this->once() )
+            ->method ( 'findUserByNameAndEmail' )
+            ->with   ( $name, $email )
+            ->will   ( $this->returnValue( array() ) )
+        ;
+        $this->repo
+            ->expects( $this->at( 0 ) )
+            ->method ( '_buildFromResponse' )
+            ->with   ( array() )
+            ->will   ( $this->returnValue( array() ) )
+        ;
+        $this->apiService
+            ->expects( $this->once() )
+            ->method ( 'createUser' )
+            ->with   ( array( 'name' => $name, 'email' => $email ) )
+            ->will   ( $this->returnValue( $mockResponse ) )
+        ;
+        $this->repo
+            ->expects( $this->at( 1 ) )
+            ->method ( '_buildFromResponse' )
+            ->with   ( $mockResponse )
+            ->will   ( $this->returnValue( array( $mockEntity ) ) )
+        ;
+        $this->assertEquals(
+                $mockEntity,
+                $this->repo->getForNameAndEmail( $name, $email )
+        );
+    }
 }

@@ -84,5 +84,20 @@ class Repository extends AbstractRepository
         $entities = $this->_buildFromResponse( $this->_apiService->getUserById( $id ) );
         return array_shift( $entities );
     }
-
+    
+    /**
+     * Tries to grab a user based on name and email. If it doesn't exist, we create one.
+     * @var string $name
+     * @var string $email
+     * @return Entity
+     */
+    public function getForNameAndEmail( $name, $email )
+    {
+        $entities = $this->_buildFromResponse( $this->_apiService->findUserByNameAndEmail( $name, $email ) );
+        if ( empty( $entities ) ) {
+            $data = array( 'name' => $name, 'email' => $email );
+            $entities = $this->_buildFromResponse( $this->_apiService->createUser( $data ) );
+        }
+        return array_shift( $entities );
+    }
 }
