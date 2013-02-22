@@ -1,8 +1,8 @@
 <?php
 /**
- * Class definition for Malwarebytes\ZendeskBundle\Tests\DataModel\Ticket\RepositoryTest
+ * Class definition for Malwarebytes\ZendeskBundle\Tests\DataModel\User\RepositoryTest
  */
-namespace Malwarebytes\ZendeskBundle\Tests\DataModel\Ticket;
+namespace Malwarebytes\ZendeskBundle\Tests\DataModel\User;
 use \ReflectionProperty;
 use \ReflectionMethod;
 
@@ -15,25 +15,25 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
                                  ->disableOriginalConstructor()
                                  ->getMock();
         
-        $this->repo = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository' )
+        $this->repo = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\User\Repository' )
                            ->setMethods( $repoMethods )
                            ->setConstructorArgs( array( $this->apiService ) )
                            ->getMockForAbstractClass();
     }
     
     /**
-     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::_buildFromResponse
+     * @covers Malwarebytes\ZendeskBundle\DataModel\User\Repository::_buildFromResponse
      */
-    public function test_buildFromResponseSingleTicket()
+    public function test_buildFromResponseSingleUser()
     {
         $this->_configure();
         
-        $reflResp = new ReflectionProperty( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository', '_currentResponse' );
+        $reflResp = new ReflectionProperty( 'Malwarebytes\ZendeskBundle\DataModel\User\Repository', '_currentResponse' );
         $reflResp->setAccessible( true );
-        $reflBuild = new ReflectionMethod( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository', '_buildFromResponse' );
+        $reflBuild = new ReflectionMethod( 'Malwarebytes\ZendeskBundle\DataModel\User\Repository', '_buildFromResponse' );
         $reflBuild->setAccessible( true );
         
-        $response = array( 'ticket' => array( 'foo' => 'bar' ) );
+        $response = array( 'user' => array( 'foo' => 'bar' ) );
         
         $entities = $reflBuild->invoke( $this->repo, $response );
         $this->assertEquals(
@@ -41,7 +41,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
                 count( $entities )
         );
         $this->assertInstanceOf(
-                'Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity',
+                'Malwarebytes\ZendeskBundle\DataModel\User\Entity',
                 $entities[0]
         );
         $this->assertEquals(
@@ -51,18 +51,18 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::_buildFromResponse
+     * @covers Malwarebytes\ZendeskBundle\DataModel\User\Repository::_buildFromResponse
      */
-    public function test_buildFromResponseManyTickets()
+    public function test_buildFromResponseManyUsers()
     {
         $this->_configure();
         
-        $reflResp = new ReflectionProperty( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository', '_currentResponse' );
+        $reflResp = new ReflectionProperty( 'Malwarebytes\ZendeskBundle\DataModel\User\Repository', '_currentResponse' );
         $reflResp->setAccessible( true );
-        $reflBuild = new ReflectionMethod( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository', '_buildFromResponse' );
+        $reflBuild = new ReflectionMethod( 'Malwarebytes\ZendeskBundle\DataModel\User\Repository', '_buildFromResponse' );
         $reflBuild->setAccessible( true );
         
-        $response = array( 'tickets' => array( array( 'foo' => 'bar' ), array( 'baz' => 'qux' ) ) );
+        $response = array( 'users' => array( array( 'foo' => 'bar' ), array( 'baz' => 'qux' ) ) );
         
         $entities = $reflBuild->invoke( $this->repo, $response );
         $this->assertEquals(
@@ -70,11 +70,11 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
                 count( $entities )
         );
         $this->assertInstanceOf(
-                'Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity',
+                'Malwarebytes\ZendeskBundle\DataModel\User\Entity',
                 $entities[0]
         );
         $this->assertInstanceOf(
-                'Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity',
+                'Malwarebytes\ZendeskBundle\DataModel\User\Entity',
                 $entities[1]
         );
         $this->assertEquals(
@@ -84,35 +84,47 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::_create
+     * @covers Malwarebytes\ZendeskBundle\DataModel\User\Repository::_create
      */
     public function testCreate()
     {
-        $ticketFields = array( 'foo' => 'bar' );
-        $this->_configure( array( 'createTicket' ) );
-        $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
-                           ->setConstructorArgs( array( $ticketFields ) )
+        $userFields = array( 'foo' => 'bar' );
+        $this->_configure( array( 'createUser' ) );
+        $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
+                           ->setConstructorArgs( array( $userFields ) )
                            ->setMethods( array( 'toArray', 'setFields' ) )
                            ->getMock();
-        $savedTicketArray = array( 'id' => 123, 'foo' => 'bar' );
-        $response = array( 'ticket' => $savedTicketArray );
+        $savedUserArray = array( 'id' => 123, 'foo' => 'bar' );
+        $response = array( 'user' => $savedUserArray );
+        $reflCreate = new ReflectionMethod( 'Malwarebytes\ZendeskBundle\DataModel\User\Repository', '_create' );
+        try {
+            $reflCreate->invoke( $this->repo, $mockEntity );
+        } catch ( \Exception $e ) {}
+        $this->assertInstanceOf(
+                '\Exception',
+                $e,
+                "Trying to create a user without a name and email should result in an exception."
+        );
+        $userFields['name'] = "Joe Blow";
+        $userFields['email'] = "joe@blow.com";
+        
         $mockEntity
             ->expects( $this->once() )
             ->method ( 'toArray' )
-            ->will   ( $this->returnValue( $ticketFields ) )
+            ->will   ( $this->returnValue( $userFields ) )
         ;
         $this->apiService
             ->expects( $this->once() )
-            ->method ( 'createTicket' )
-            ->with   ( array( 'ticket' => $ticketFields ) )
+            ->method ( 'createUser' )
+            ->with   ( array( 'user' => $userFields ) )
             ->will   ( $this->returnValue( $response ) )
         ;
         $mockEntity
             ->expects( $this->once() )
             ->method ( 'setFields' )
-            ->with   ( $savedTicketArray )
+            ->with   ( $savedUserArray )
         ;
-        $reflCreate = new ReflectionMethod( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository', '_create' );
+        
         $reflCreate->setAccessible( true );
         $this->assertEquals(
                 $mockEntity,
@@ -121,22 +133,22 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::_update
+     * @covers Malwarebytes\ZendeskBundle\DataModel\User\Repository::_update
      */
     public function testUpdate()
     {
-        $ticketFields = array( 'id' => 123, 'foo' => 'bar' );
-        $this->_configure( array( 'updateTicket' ) );
-        $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
-                           ->setConstructorArgs( array( $ticketFields ) )
+        $userFields = array( 'id' => 123, 'foo' => 'bar' );
+        $this->_configure( array( 'updateUser' ) );
+        $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
+                           ->setConstructorArgs( array( $userFields ) )
                            ->setMethods( array( 'toArray', 'setFields', 'offsetGet' ) )
                            ->getMock();
-        $savedTicketArray = array( 'id' => 123, 'foo' => 'bar' );
-        $response = array( 'ticket' => $savedTicketArray );
+        $savedUserArray = array( 'id' => 123, 'foo' => 'bar' );
+        $response = array( 'user' => $savedUserArray );
         $mockEntity
             ->expects( $this->once() )
             ->method ( 'toArray' )
-            ->will   ( $this->returnValue( $ticketFields ) )
+            ->will   ( $this->returnValue( $userFields ) )
         ;
         $mockEntity
             ->expects( $this->once() )
@@ -146,16 +158,16 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         ;
         $this->apiService
             ->expects( $this->once() )
-            ->method ( 'updateTicket' )
-            ->with   ( 123, array( 'ticket' => $ticketFields ) )
+            ->method ( 'updateUser' )
+            ->with   ( 123, array( 'user' => $userFields ) )
             ->will   ( $this->returnValue( $response ) )
         ;
         $mockEntity
             ->expects( $this->once() )
             ->method ( 'setFields' )
-            ->with   ( $savedTicketArray )
+            ->with   ( $savedUserArray )
         ;
-        $reflUpdate = new ReflectionMethod( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository', '_update' );
+        $reflUpdate = new ReflectionMethod( 'Malwarebytes\ZendeskBundle\DataModel\User\Repository', '_update' );
         $reflUpdate->setAccessible( true );
         $this->assertEquals(
                 $mockEntity,
@@ -164,18 +176,18 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::getByDefaultSort
+     * @covers Malwarebytes\ZendeskBundle\DataModel\Users\Repository::getByDefaultSort
      */
     public function testGetByDefaultSort()
     {
-        $this->_configure( array( 'getTickets' ), array( '_buildPaginatorFromResponse' ) );
+        $this->_configure( array( 'getUsers' ), array( '_buildPaginatorFromResponse' ) );
         $mockPaginator = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Paginator' )
                               ->disableOriginalConstructor()
                               ->getMock();
         $response = array( 'foo' );
         $this->apiService
             ->expects( $this->once() )
-            ->method ( 'getTickets' )
+            ->method ( 'getUsers' )
             ->will   ( $this->returnValue( $response ) )
         ;
         $this->repo
@@ -191,18 +203,18 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::getById
+     * @covers Malwarebytes\ZendeskBundle\DataModel\User\Repository::getById
      */
     public function testGetById()
     {
-        $this->_configure( array( 'getTicket' ), array( '_buildFromResponse' ) );
-        $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
+        $this->_configure( array( 'getUserById' ), array( '_buildFromResponse' ) );
+        $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
                            ->disableOriginalConstructor()
                            ->getMock();
         $response = array( 'foo' );
         $this->apiService
             ->expects( $this->once() )
-            ->method ( 'getTicket' )
+            ->method ( 'getUserById' )
             ->with   ( 123 )
             ->will   ( $this->returnValue( $response ) )
         ;

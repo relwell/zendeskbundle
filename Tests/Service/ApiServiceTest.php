@@ -92,14 +92,21 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $name = 'Name';
         $email = 'email@foo.com';
         
-        $dataArray = array(
+        try {
+            $service->createUser( array() );
+        } catch ( \Exception $e ) { }
+        
+        $this->assertInstanceOf(
+                '\Exception',
+                $e,
+                "ApiService::createUser should throw an exception if missing name and email values"
+        );
+        $argumentArray = array(
                 'name' => $name,
                 'email' => $email,
-                'verified' => true
                 );
-        
+        $dataArray = array_merge( $argumentArray, array( 'verified' => true ) );
         $responseArray = array( 'mockresponse' );
-        
         $this->zendesk
             ->expects( $this->at( 0 ) )
             ->method ( 'call' )
@@ -109,7 +116,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
                 $responseArray,
                 $service->setZendeskApi( $this->zendesk )
-                        ->createUser   ( $name, $email )
+                        ->createUser   ( $argumentArray )
         );
         $dataArray['verified'] = false;
         $this->zendesk
@@ -121,7 +128,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
                 $responseArray,
                 $service->setZendeskApi( $this->zendesk )
-                        ->createUser   ( $name, $email, false )
+                        ->createUser   ( $argumentArray, false )
         );
         
     }
@@ -345,6 +352,28 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
                 $response,
                 $service->setZendeskApi( $this->zendesk )->updateTicket( $ticketId, $data )
+        );
+    }
+    
+    /**
+     * @covers MalwareBytes\ZendeskBundle\Service\ApiService::updateUser
+     */
+    public function testUpdateUser()
+    {
+        $service = $this->apiService->setMethods( null )->getMock();
+        $userId = 123;
+        $data = array( 'foo' => 'bar' );
+        $preparedData = array( 'user' => $data );
+        $response = array( 'response' );
+        $this->zendesk
+            ->expects( $this->once() )
+            ->method ( 'call' )
+            ->with   ( "/users/{$userId}", json_encode( $preparedData ), 'PUT' )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $service->setZendeskApi( $this->zendesk )->updateUser( $userId, $preparedData )
         );
     }
     

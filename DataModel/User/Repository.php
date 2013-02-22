@@ -3,6 +3,9 @@
  * Class definition for \Malwarebytes\ZendeskBundle\DataModel\User\Repository
  */
 namespace Malwarebytes\ZendeskBundle\DataModel\User;
+use Malwarebytes\ZendeskBundle\DataModel\Paginator;
+use Malwarebytes\ZendeskBundle\DataModel\AbstractEntity;
+
 use Malwarebytes\ZendeskBundle\DataModel\AbstractRepository;
 /**
  * Repository for users.
@@ -18,6 +21,7 @@ class Repository extends AbstractRepository
      */
     protected function _buildFromResponse( array $response )
     {
+        $this->_currentResponse = $response;
         $users = array();
         if (! empty( $response['user'] ) ) {
             $users[] = new Entity( $response['user'] );
@@ -38,29 +42,47 @@ class Repository extends AbstractRepository
      */
     protected function _create( AbstractEntity $instance )
     {
-        if ( empty( $instance['name'] ) || empty( $instance['email'] ) ) {
-            throw new \Exception( 'Users need a name or an email to be created' );
+        $response = $this->_apiService->createUser( array( 'user' => $instance->toArray() ), true );
+        if ( $response['user'] ) {
+            $instance->setFields( $response['user'] );
         }
-        $response = $this->_apiService->createUser( $instance['name'], $instance['email'], true );
-        $instance->setFields( $response['user'] );
         return $instance;
     }
     
+    /**
+     * Makes the appropriate API call with the instance data
+     * @see \Malwarebytes\ZendeskBundle\DataModel\AbstractRepository::_update()
+     * @param Entity $instance
+     * @return $instance
+     */
     protected function _update( AbstractEntity $instance )
     {
-        $response = $this->_apiService->updateUser( $instance->toArray() );
-        $instance->setFields( $response['user'] );
+        $response = $this->_apiService->updateUser( $instance['id'], array( 'user' => $instance->toArray() ) );
+        if ( $response['user'] ) {
+            $instance->setFields( $response['user'] );
+        }
         return $instance;
     }
     
+    /**
+     * Returns users according to the zendesk API default sort
+     * @see \Malwarebytes\ZendeskBundle\DataModel\AbstractRepository::getByDefaultSort()
+     * @return Malwarebytes\ZendeskBundle\DataModel\Paginator
+     */
     public function getByDefaultSort()
     {
         return $this->_buildPaginatorFromResponse( $this->_apiService->getUsers() );
     }
     
+    /**
+     * Returns the user entity based on the provided ID
+     * @see \Malwarebytes\ZendeskBundle\DataModel\AbstractRepository::getById()
+     * @return Entity
+     */
     public function getById( $id ) 
     {
-        return $this->_buildFromResponse( $this->_apiService->getUserById( $id ) );
+        $entities = $this->_buildFromResponse( $this->_apiService->getUserById( $id ) );
+        return array_shift( $entities );
     }
 
 }

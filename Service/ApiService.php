@@ -62,19 +62,26 @@ class ApiService
     /**
      * Sends a create request to API's user service
      * Returns a json-decoded array from the response
-     * @param string $name
-     * @param string $email
+     * @param array $data
      * @param bool $verified
      * @return array return value of \zendesk::call
      */
-    public function createUser( $name, $email, $verified = true )
+    public function createUser( array $data, $verified = true )
     {
-        $jsonArray = array(
-                'name' => $name,
-                'email' => $email,
-                'verified' => $verified
-                );
-        return $this->api->call( '/users' , json_encode( $jsonArray ), 'POST' );
+        if ( empty( $data['name'] ) || empty( $data['email'] ) ) {
+            throw new \Exception( 'Users need a name or an email to be created' );
+        }
+        $data['verified'] = $verified;
+        return $this->api->call( '/users' , json_encode( $data ), 'POST' );
+    }
+    
+    /**
+     * Updates a user provided an array of user data.
+     * @param array $data
+     * @return array
+     */
+    public function updateUser( $userId, array $data ) {
+        return $this->api->call( "/users/{$userId}", json_encode( $data ), 'PUT' );
     }
     
     /**
