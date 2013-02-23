@@ -5,6 +5,7 @@
 namespace Malwarebytes\ZendeskBundle\DataModel\Ticket;
 use Malwarebytes\ZendeskBundle\DataModel\AbstractEntity;
 use Malwarebytes\ZendeskBundle\DataModel\AbstractRepository;
+use Malwarebytes\ZendeskBundle\DataModel\User\Entity as User;
 use Malwarebytes\ZendeskBundle\Service\ApiService;
 /**
  * Responsible for accessing and managing one or more ticket entities.
@@ -83,5 +84,18 @@ class Repository extends AbstractRepository
     {
         $entities = $this->_buildFromResponse( $this->_apiService->getTicket( $id ) );
         return array_shift( $entities ); 
+    }
+    
+    /**
+     * Returns a paginator (or empty array, if the user doesn't exist) containing all the tickets for a user.
+     * @param User $user
+     * @return array|\Malwarebytes\ZendeskBundle\DataModel\Paginator
+     */
+    public function getTicketsRequestedByUser( User $user )
+    {
+        if (! $user->exists() ) {
+            return array();
+        }
+        return $this->_buildPaginatorFromResponse( $this->_apiService->getTicketsRequestedByUser( $user['id'] ) );
     }
 }

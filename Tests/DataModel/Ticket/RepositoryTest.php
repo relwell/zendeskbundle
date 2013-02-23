@@ -217,4 +217,70 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
                 $this->repo->getById( 123 )
         );
     }
+    
+    /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::getTicketsRequestedByUser
+     */
+    public function testGetTicketsRequestedByEmptyUser()
+    {
+        $this->_configure( array( 'getTicketsRequestedByUser' ), array( '_buildPaginatorFromResponse' ) );
+        $user = $this->getMockBuilder( 'Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
+                     ->setConstructorArgs( array( array( 'id' => 123 ) ) )
+                     ->setMethods( array( 'exists' ) )
+                     ->getMock();
+        $mockPaginator = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Paginator' )
+                              ->disableOriginalConstructor()
+                              ->getMock();
+        
+        $mockResponse = array( "deosn't matter" );
+        
+        $user
+            ->expects( $this->at( 0 ) )
+            ->method ( 'exists' )
+            ->will   ( $this->returnValue( false ) )
+        ;
+        $this->assertEquals(
+                array(),
+                $this->repo->getTicketsRequestedByUser( $user ),
+                "A non-existent user does not have tickets, so return an empty array."
+        );
+    }
+    
+    /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::getTicketsRequestedByUser
+     */
+    public function testGetTicketsRequestedByRealUser()
+    {
+        $this->_configure( array( 'getTicketsRequestedByUser' ), array( '_buildPaginatorFromResponse' ) );
+        $user = $this->getMockBuilder( 'Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
+                     ->setConstructorArgs( array( array( 'id' => 123 ) ) )
+                     ->setMethods( array( 'exists' ) )
+                     ->getMock();
+        $mockPaginator = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Paginator' )
+                              ->disableOriginalConstructor()
+                              ->getMock();
+        
+        $mockResponse = array( "deosn't matter" );
+        $user
+            ->expects( $this->once() )
+            ->method ( 'exists' )
+            ->will   ( $this->returnValue( true ) )
+        ;
+        $this->apiService
+            ->expects( $this->once() )
+            ->method ( 'getTicketsRequestedByUser' )
+            ->with   ( 123 )
+            ->will   ( $this->returnValue ( $mockResponse ) )
+        ;
+        $this->repo
+            ->expects( $this->once() )
+            ->method ( '_buildPaginatorFromResponse' )
+            ->with   ( $mockResponse )
+            ->will   ( $this->returnValue( $mockPaginator ) )
+        ;
+        $this->assertEquals(
+                $mockPaginator,
+                $this->repo->getTicketsRequestedByUser( $user )
+        );
+    }
 }
