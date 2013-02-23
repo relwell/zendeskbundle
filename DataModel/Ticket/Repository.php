@@ -34,6 +34,11 @@ class Repository extends AbstractRepository
             {
                 $entities[] = new Entity( $this, $ticket );
             }
+        } else if (! empty( $response['results'] ) ) {
+            foreach ( $response['results'] as $result )
+            {
+                $entities[] = new Entity( $this, $result );
+            }
         }
         return $entities;
     }

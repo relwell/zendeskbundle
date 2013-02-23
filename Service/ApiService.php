@@ -169,6 +169,17 @@ class ApiService
     }
     
     /**
+     * This one is more forgiving.
+     * @param string $name
+     * @param string $email
+     * @return array
+     */
+    public function findUserByEmail( $email )
+    {
+        return $this->_search( sprintf( 'type:user email:%s', $email ) );
+    }
+    
+    /**
      * Returns an array representing ticket fields
      * @param int $ticketId
      * @return array
@@ -328,7 +339,8 @@ class ApiService
      */
     protected function _search( $queryString )
     {
-        $path = "/search?" . http_build_query( array( 'query' => $queryString ) );
+        // we have to add json here because the lib we're using sucks apparently
+        $path = "/search.json?" . http_build_query( array( 'query' => $queryString ) );
         return $this->_get( $path );
     }
     

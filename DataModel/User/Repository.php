@@ -33,6 +33,11 @@ class Repository extends AbstractRepository
             {
                 $users[] = new Entity( $this, $user );
             }
+        } else if (! empty( $response['results'] ) ) {
+            foreach ( $response['results'] as $result )
+            {
+                $users[] = new Entity( $this, $result );
+            }
         }
         return $users;
     }
@@ -99,7 +104,7 @@ class Repository extends AbstractRepository
         $entities = $this->_buildFromResponse( $this->_apiService->findUserByNameAndEmail( $name, $email ) );
         if ( empty( $entities ) ) {
             $data = array( 'name' => $name, 'email' => $email );
-            var_dump( $this->_apiService->createUser( $data ) );
+            
             $entities = $this->_buildFromResponse( $this->_apiService->createUser( $data ) );
         }
         return array_shift( $entities );
