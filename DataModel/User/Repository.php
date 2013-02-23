@@ -5,7 +5,7 @@
 namespace Malwarebytes\ZendeskBundle\DataModel\User;
 use Malwarebytes\ZendeskBundle\DataModel\Paginator;
 use Malwarebytes\ZendeskBundle\DataModel\AbstractEntity;
-
+use Malwarebytes\ZendeskBundle\DataModel\ApiResponseException;
 use Malwarebytes\ZendeskBundle\DataModel\AbstractRepository;
 /**
  * Repository for users.
@@ -23,6 +23,9 @@ class Repository extends AbstractRepository
     {
         $this->_currentResponse = $response;
         $users = array();
+        if (! empty( $response['error'] ) ) {
+            throw new ApiResponseException( $response );
+        }
         if (! empty( $response['user'] ) ) {
             $users[] = new Entity( $this, $response['user'] );
         } else if (! empty( $response['users'] ) ) {

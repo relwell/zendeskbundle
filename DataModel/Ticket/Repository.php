@@ -7,6 +7,7 @@ use Malwarebytes\ZendeskBundle\DataModel\AbstractEntity;
 use Malwarebytes\ZendeskBundle\DataModel\AbstractRepository;
 use Malwarebytes\ZendeskBundle\DataModel\User\Entity as User;
 use Malwarebytes\ZendeskBundle\Service\ApiService;
+use Malwarebytes\ZendeskBundle\DataModel\ApiResponseException;
 /**
  * Responsible for accessing and managing one or more ticket entities.
  * @author relwell
@@ -23,6 +24,9 @@ class Repository extends AbstractRepository
     {
         $this->_currentResponse = $response;
         $entities = array();
+        if (! empty( $response['error'] ) ) {
+            throw new ApiResponseException( $response );
+        }
         if (! empty( $response['ticket'] ) ) {
             $entities[] = new Entity( $this, $response['ticket'] );
         } else if (! empty( $response['tickets'] ) ) {
