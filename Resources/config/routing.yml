@@ -1,3 +1,8 @@
 zendesk_homepage:
     pattern:  /hello/{name}
     defaults: { _controller: ZendeskBundle:Default:index }
+
+zendesk_homepage:
+    pattern:  /user/view/{name}/{email}
+    defaults: { _controller: ZendeskBundle:Default:accessUser }
+    
