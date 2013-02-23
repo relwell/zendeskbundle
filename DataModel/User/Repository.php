@@ -50,7 +50,7 @@ class Repository extends AbstractRepository
      */
     protected function _create( AbstractEntity $instance )
     {
-        $response = $this->_apiService->createUser( array( 'user' => $instance->toArray() ), true );
+        $response = $this->_apiService->createUser( $instance->toArray(), true );
         if ( $response['user'] ) {
             $instance->setFields( $response['user'] );
         }
@@ -65,7 +65,7 @@ class Repository extends AbstractRepository
      */
     protected function _update( AbstractEntity $instance )
     {
-        $response = $this->_apiService->updateUser( $instance['id'], array( 'user' => $instance->toArray() ) );
+        $response = $this->_apiService->updateUser( $instance['id'], $instance->toArray() );
         if ( $response['user'] ) {
             $instance->setFields( $response['user'] );
         }
@@ -104,8 +104,7 @@ class Repository extends AbstractRepository
         $entities = $this->_buildFromResponse( $this->_apiService->findUserByNameAndEmail( $name, $email ) );
         if ( empty( $entities ) ) {
             $data = array( 'name' => $name, 'email' => $email );
-            
-            $entities = $this->_buildFromResponse( $this->_apiService->createUser( $data ) );
+            $entities = $this->_buildFromResponse( $this->_apiService->createUser( array( 'user' => $data  ) ) );
         }
         return array_shift( $entities );
     }

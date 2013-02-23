@@ -51,7 +51,7 @@ class Repository extends AbstractRepository
      */
     protected function _create( AbstractEntity $instance )
     {
-        $response = $this->_apiService->createTicket( array( 'ticket' => $instance->toArray() ) );
+        $response = $this->_apiService->createTicket( $instance->toArray() );
         if ( $response['ticket'] ) {
             $instance->setFields( $response['ticket'], true );
         }
@@ -66,7 +66,7 @@ class Repository extends AbstractRepository
      */
     protected function _update( AbstractEntity $instance )
     {
-        $response = $this->_apiService->updateTicket( $instance['id'], array( 'ticket' => $instance->toArray() ) );
+        $response = $this->_apiService->updateTicket( $instance['id'], $instance->toArray() );
         if ( $response['ticket'] ) {
             $instance->setFields( $response['ticket'], true );
         }

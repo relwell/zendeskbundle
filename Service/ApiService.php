@@ -68,10 +68,10 @@ class ApiService
      */
     public function createUser( array $data, $verified = true )
     {
-        if ( empty( $data['name'] ) || empty( $data['email'] ) ) {
+        if ( empty( $data['user']['name'] ) || empty( $data['user']['email'] ) ) {
             throw new \Exception( 'Users need a name or an email to be created' );
         }
-        $data['verified'] = $verified;
+        $data['user']['verified'] = $verified;
         return $this->api->call( '/users' , json_encode( $data ), 'POST' );
     }
     

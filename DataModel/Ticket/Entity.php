@@ -39,8 +39,18 @@ class Entity extends AbstractEntity
      * @see \Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::getPrimaryKey()
      * @return string
      */
-    public function getPrimaryKey() {
+    public function getPrimaryKey()
+    {
         return 'id';
+    }
+    
+    /**
+     * @see \Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::getType()
+     * @return string
+     */
+    public function getType()
+    {
+        return 'ticket';
     }
     
     /**
