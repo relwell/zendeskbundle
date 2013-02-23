@@ -8,6 +8,9 @@ use \ReflectionMethod;
 
 class EntityTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity::getPrimaryKey
+     */
     public function testGetPrimaryKey()
     {
         $ticket = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
@@ -17,6 +20,32 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
                 'id',
                 $ticket->getPrimaryKey()
+        );
+    }
+    
+    /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity::addComment
+     */
+    public function testAddComment()
+    {
+        $mockRepo = $this->getMockBuilder( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository' )
+                         ->disableOriginalConstructor()
+                         ->setMethods( array( 'addCommentToTicket' ) )
+                         ->getMock();
+        $mockEntity = $this->getMockBuilder( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
+                           ->setConstructorArgs( array( $mockRepo, array( 'foo' => 'bar' ) ) )
+                           ->setMethods( null )
+                           ->getMock();
+        $response = array( 'foo' );
+        $mockRepo
+            ->expects( $this->once() )
+            ->method ( 'addCommentToTicket' )
+            ->with   ( $mockEntity, 'foo', true )
+            ->will   ( $this->returnValue( $mockEntity ) )
+        ;
+        $this->assertEquals(
+                $mockEntity,
+                $mockEntity->addComment( 'foo' )
         );
     }
 }

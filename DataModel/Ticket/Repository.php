@@ -65,6 +65,25 @@ class Repository extends AbstractRepository
     }
     
     /**
+     * Immediately updates the entity.
+     * @param Entity $entity
+     * @param string $comment
+     * @param bool $public
+     * @throws \Exception
+     */
+    public function addCommentToTicket( Entity $entity, $comment, $public = true )
+    {
+        if (! $entity->exists() ) {
+            throw new \Exception( "We can't add a comment to a ticket that doesn't already exist" );
+        }
+        $response = $this->_apiService->addCommentToTicket( $entity['id'], $comment, $public );
+        if ( $response['ticket'] ) {
+            $entity->setFields( $response['ticket'] );
+        }
+        return $entity;
+    }
+    
+    /**
      * Return tickets sorted by creation date ascending.
      * @see \Malwarebytes\ZendeskBundle\DataModel\AbstractRepository::getByDefaultSort()
      * @return Paginator

@@ -44,9 +44,10 @@ class Entity extends AbstractEntity
     }
     
     /**
-     * Adds a comment to the ticket. 
+     * Adds a comment to the ticket. Automatically saves as well. Use ArrayAccess approach at your own peril.
+     * @return Entity 
      */
-    public function setComment( $comment, $public = true ) {
-        
+    public function addComment( $comment, $public = true ) {
+        return $this->_repository->addCommentToTicket( $this, $comment, $public );
     }
 }

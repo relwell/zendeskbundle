@@ -283,4 +283,62 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
                 $this->repo->getTicketsRequestedByUser( $user )
         );
     }
+    
+    public function testAddCommentToTicketNotExists()
+    {
+        $this->_configure( array( 'addCommentToTicket' ) );
+        $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
+                           ->disableOriginalConstructor()
+                           ->setMethods( array( 'exists', 'setFields' ) )
+                           ->getMock();
+        $mockEntity
+            ->expects( $this->once() )
+            ->method ( 'exists' )
+            ->will   ( $this->returnValue( false ) )
+        ;
+        try {
+            $this->repo->addCommentToTicket( $mockEntity, 'foo' );
+        } catch ( \Exception $e ) {}
+        $this->assertInstanceOf(
+                '\Exception',
+                $e
+        );
+    }
+    
+    public function testAddCommentToTicketExists()
+    {
+        $this->_configure( array( 'addCommentToTicket' ) );
+        $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
+                           ->setConstructorArgs( array( $this->repo, array( 'id' => 123 ) ) )
+                           ->setMethods( array( 'exists', 'setFields', 'offsetGet' ) )
+                           ->getMock();
+        $fields = array( 'foo' => 'bar' );
+        $response = array( 'ticket' => $fields );
+        $mockEntity
+            ->expects( $this->once() )
+            ->method ( 'exists' )
+            ->will   ( $this->returnValue( true ) )
+        ;
+        $mockEntity
+            ->expects( $this->once() )
+            ->method ( 'offsetGet' )
+            ->with   ( 'id' )
+            ->will   ( $this->returnValue( 123 ) )
+        ;
+        $this->apiService
+            ->expects( $this->once() )
+            ->method ( 'addCommentToTicket' )
+            ->with   ( 123, 'foo', true )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $mockEntity
+            ->expects( $this->once() )
+            ->method ( 'setFields' )
+            ->with   ( $fields )
+        ;
+        $this->assertEquals(
+                $mockEntity,
+                $this->repo->addCommentToTicket( $mockEntity, 'foo' )
+        );
+    }
 }
