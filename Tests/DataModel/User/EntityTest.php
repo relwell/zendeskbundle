@@ -8,6 +8,9 @@ use \ReflectionMethod;
 
 class EntityTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\User\Entity::getPrimaryKey
+     */
     public function testGetPrimaryKey()
     {
         $ticket = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
