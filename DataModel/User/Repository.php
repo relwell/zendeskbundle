@@ -24,11 +24,11 @@ class Repository extends AbstractRepository
         $this->_currentResponse = $response;
         $users = array();
         if (! empty( $response['user'] ) ) {
-            $users[] = new Entity( $response['user'] );
+            $users[] = new Entity( $this, $response['user'] );
         } else if (! empty( $response['users'] ) ) {
             foreach ( $response['users'] as $user )
             {
-                $users[] = new Entity( $user );
+                $users[] = new Entity( $this, $user );
             }
         }
         return $users;

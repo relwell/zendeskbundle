@@ -91,7 +91,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $userFields = array( 'foo' => 'bar' );
         $this->_configure( array( 'createUser' ) );
         $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
-                           ->setConstructorArgs( array( $userFields ) )
+                           ->setConstructorArgs( array( $this->repo, $userFields ) )
                            ->setMethods( array( 'toArray', 'setFields' ) )
                            ->getMock();
         $savedUserArray = array( 'id' => 123, 'foo' => 'bar' );
@@ -140,7 +140,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $userFields = array( 'id' => 123, 'foo' => 'bar' );
         $this->_configure( array( 'updateUser' ) );
         $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
-                           ->setConstructorArgs( array( $userFields ) )
+                           ->setConstructorArgs( array( $this->repo, $userFields ) )
                            ->setMethods( array( 'toArray', 'setFields', 'offsetGet' ) )
                            ->getMock();
         $savedUserArray = array( 'id' => 123, 'foo' => 'bar' );

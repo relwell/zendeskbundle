@@ -24,11 +24,11 @@ class Repository extends AbstractRepository
         $this->_currentResponse = $response;
         $entities = array();
         if (! empty( $response['ticket'] ) ) {
-            $entities[] = new Entity( $response['ticket'] );
+            $entities[] = new Entity( $this, $response['ticket'] );
         } else if (! empty( $response['tickets'] ) ) {
             foreach ( $response['tickets'] as $ticket )
             {
-                $entities[] = new Entity( $ticket );
+                $entities[] = new Entity( $this, $ticket );
             }
         }
         return $entities;

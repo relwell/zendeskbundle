@@ -42,4 +42,11 @@ class Entity extends AbstractEntity
     public function getPrimaryKey() {
         return 'id';
     }
+    
+    /**
+     * Adds a comment to the ticket. 
+     */
+    public function setComment( $comment, $public = true ) {
+        
+    }
 }

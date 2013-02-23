@@ -91,7 +91,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $ticketFields = array( 'foo' => 'bar' );
         $this->_configure( array( 'createTicket' ) );
         $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
-                           ->setConstructorArgs( array( $ticketFields ) )
+                           ->setConstructorArgs( array( $this->repo, $ticketFields ) )
                            ->setMethods( array( 'toArray', 'setFields' ) )
                            ->getMock();
         $savedTicketArray = array( 'id' => 123, 'foo' => 'bar' );
@@ -128,7 +128,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $ticketFields = array( 'id' => 123, 'foo' => 'bar' );
         $this->_configure( array( 'updateTicket' ) );
         $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
-                           ->setConstructorArgs( array( $ticketFields ) )
+                           ->setConstructorArgs( array( $this->repo, $ticketFields ) )
                            ->setMethods( array( 'toArray', 'setFields', 'offsetGet' ) )
                            ->getMock();
         $savedTicketArray = array( 'id' => 123, 'foo' => 'bar' );
@@ -225,7 +225,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $this->_configure( array( 'getTicketsRequestedByUser' ), array( '_buildPaginatorFromResponse' ) );
         $user = $this->getMockBuilder( 'Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
-                     ->setConstructorArgs( array( array( 'id' => 123 ) ) )
+                     ->setConstructorArgs( array( $this->repo, array( 'id' => 123 ) ) )
                      ->setMethods( array( 'exists' ) )
                      ->getMock();
         $mockPaginator = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Paginator' )
@@ -253,7 +253,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $this->_configure( array( 'getTicketsRequestedByUser' ), array( '_buildPaginatorFromResponse' ) );
         $user = $this->getMockBuilder( 'Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
-                     ->setConstructorArgs( array( array( 'id' => 123 ) ) )
+                     ->setConstructorArgs( array( $this->repo, array( 'id' => 123 ) ) )
                      ->setMethods( array( 'exists' ) )
                      ->getMock();
         $mockPaginator = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Paginator' )

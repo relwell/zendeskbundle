@@ -15,6 +15,10 @@ class AbstractEntityTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
         $this->entity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\AbstractEntity' )
                              ->disableOriginalConstructor();
+        
+        $this->repo = $this->getMockbuilder( '\Malwarebytes\ZendeskBundle\DataModel\AbstractRepository' )
+                           ->disableOriginalConstructor()
+                           ->getMockForAbstractClass();
     }
     
     /**
@@ -24,7 +28,7 @@ class AbstractEntityTest extends \PHPUnit_Framework_TestCase
     {
         $fields = array( 'foo' => 'bar' );
         $mock = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\AbstractEntity' )
-                     ->setConstructorArgs( array( $fields ) )
+                     ->setConstructorArgs( array( $this->repo, $fields ) )
                      ->getMockForAbstractClass();
         
         $fieldsRefl = new ReflectionProperty( '\Malwarebytes\ZendeskBundle\DataModel\AbstractEntity', '_fields' );

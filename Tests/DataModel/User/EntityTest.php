@@ -10,7 +10,10 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetPrimaryKey()
     {
-        $ticket = new \Malwarebytes\ZendeskBundle\DataModel\User\Entity( array() );
+        $ticket = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
+                       ->disableOriginalConstructor()
+                       ->setMethods( null )
+                       ->getMock();
         $this->assertEquals(
                 'id',
                 $ticket->getPrimaryKey()

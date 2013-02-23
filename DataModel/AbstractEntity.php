@@ -31,11 +31,18 @@ abstract class AbstractEntity implements \ArrayAccess
     protected $_mandatoryFields = array();
     
     /**
+     * This allows repos to control access to entities.
+     * @var AbstractRepository
+     */
+    protected $_repository;
+    
+    /**
      * Create an instance using the provided fields.
      * @param array $fields
      */
-    public function __construct( array $fields = array() )
+    public function __construct( AbstractRepository $repo, array $fields = array() )
     {
+        $this->_repository = $repo;
         $this->setFields( $fields, false );
     }
     
