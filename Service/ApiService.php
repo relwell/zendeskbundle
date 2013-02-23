@@ -185,7 +185,7 @@ class ApiService
      */
     public function updateTicket( $ticketId, array $data )
     {
-        return $this->api->call( "/tickets/{$ticketId}", json_encode( array( 'ticket' => $data ) ), 'PUT' );
+        return $this->api->call( "/tickets/{$ticketId}", json_encode( $data ), 'PUT' );
     }
     
     /**

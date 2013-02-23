@@ -9,9 +9,10 @@ class DefaultController extends Controller
 {
     public function accessUserAction($name, $email)
     {
-        $service = $this->get( 'api' );
+        $service = $this->get( 'zendesk.api' );
         $userRepo = new DataModel\User\Repository( $service );
         $user = $userRepo->getForNameAndEmail($name, $email);
+        var_dump($user); die;
         return print_r( $user->toArray() );
     }
     
