@@ -9,7 +9,17 @@ class DefaultController extends Controller
 {
     public function accessUserAction($name, $email)
     {
-        var_dump( $this->get( 'zendesk.repos' )->get( 'User' )->getForNameAndEmail( $name, $email ) ); die;
+        $user = $this->get( 'zendesk.repos' )
+                     ->get( 'User' )
+                     ->getForNameAndEmail( 
+                             $name, 
+                             $email, 
+                             $this->getRequest()->query->get( 'create', false) 
+                             );
+        $dataArray = empty( $user ) ? array( 'user' => null ) : $user->toArray();
+        $dataArray['name'] = $name;
+        $dataArray['email'] = $email;
+        return $this->render( 'ZendeskBundle:Default:view.html.twig', $dataArray );
     }
     
     public function indexAction($name)

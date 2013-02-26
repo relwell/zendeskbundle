@@ -94,15 +94,16 @@ class Repository extends AbstractRepository
     }
     
     /**
-     * Tries to grab a user based on name and email. If it doesn't exist, we create one.
+     * Tries to grab a user based on name and email. If it doesn't exist, we create one (if $create is true).
      * @var string $name
      * @var string $email
-     * @return Entity
+     * @var bool $create
+     * @return Entity|null
      */
-    public function getForNameAndEmail( $name, $email )
+    public function getForNameAndEmail( $name, $email, $create = false )
     {
         $entities = $this->_buildFromResponse( $this->_apiService->findUserByNameAndEmail( $name, $email ) );
-        if ( empty( $entities ) ) {
+        if ( $create && empty( $entities ) ) {
             $data = array( 'name' => $name, 'email' => $email );
             $entities = $this->_buildFromResponse( $this->_apiService->createUser( array( 'user' => $data  ) ) );
         }
