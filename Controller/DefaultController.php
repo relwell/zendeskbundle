@@ -7,7 +7,7 @@ use Malwarebytes\ZendeskBundle\DataModel;
 
 class DefaultController extends Controller
 {
-    public function accessUserAction($name, $email)
+    public function accessUserAction( $name, $email )
     {
         $user = $this->get( 'zendesk.repos' )
                      ->get( 'User' )
@@ -19,7 +19,36 @@ class DefaultController extends Controller
         $dataArray = empty( $user ) ? array( 'user' => null ) : $user->toArray();
         $dataArray['name'] = $name;
         $dataArray['email'] = $email;
-        return $this->render( 'ZendeskBundle:Default:view.html.twig', $dataArray );
+        return $this->render( 'ZendeskBundle:Default:view-user.html.twig', $dataArray );
+    }
+    
+    public function userTicketsAction( $userId )
+    {
+        $user = $this->get( 'zendesk.repos' )->get( 'User' )->getById( $userId );
+        if ( empty( $user ) ) {
+            throw new \Exception( "No user with ID {$userId}" );
+        }
+        
+        $ticketRepo = $this->get( 'zendesk.repos' )->get( 'Ticket' );
+        $request = $this->getRequest();
+        if ( $request->getMethod() == 'POST' ) {
+            $data = $request->request->all();
+            $ticket = $ticketRepo->getById( $data['ticketId'] );
+            if ( empty( $ticket ) ) {
+                throw new \Exception( "No such ticket." );
+            }
+            var_dump( $ticket->addComment( $data['comment'], $data['public'] == "on" ) );
+        }
+        
+        $tickets = $ticketRepo->getTicketsRequestedByUser( $user );
+        foreach ( $tickets as $ticket ) {
+            $comments = $ticket->getComments();
+            if (! empty( $comments ) ) {
+                var_dump($comments); die;
+            }
+        }
+        $tickets->rewind();
+        return $this->render( 'ZendeskBundle:Default:view-user-tickets.html.twig', array( 'tickets' => $tickets, 'user' => $user ) );
     }
     
     public function indexAction($name)

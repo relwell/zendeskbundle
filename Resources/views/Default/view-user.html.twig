@@ -2,6 +2,7 @@
 <h2>{{email}}</h2>
 {% if user %}
 <table>
+	<a href="{{ url('zendesk_user_tickets', { 'userId': user.id }) }}">View this user's tickets</a>
 	{% for key, value in user %}
 		<tr>
 			<td>{{key}}</td>
