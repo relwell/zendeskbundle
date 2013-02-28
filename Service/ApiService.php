@@ -235,12 +235,13 @@ class ApiService
     {
         return $this->updateTicket(
                 $ticketId,
-                array(
+                array( 'ticket' => array(
                         'comment' => array(
                                 'public' => $public,
                                 'body'   => $comment
                                 )
                         )
+                    )
                 );
     }
     
@@ -330,6 +331,27 @@ class ApiService
     {
         $parsed = \parse_url( $pageUrl );
         return $this->_get( $parsed['path'] . '?' . $parsed['query'] );
+    }
+    
+    /**
+     * Returns all audits for a ticket.
+     * @param int $ticketId
+     * @return array
+     */
+    public function getAuditsForTicket( $ticketId )
+    {
+        return $this->_get( "/tickets/{$ticketId}/audits" );
+    }
+    
+    /**
+     * Grabs a specific audit for a ticket.
+     * @param int $ticketId
+     * @param int $auditId
+     * @return array
+     */
+    public function getAudit( $ticketId, $auditId )
+    {
+        return $this->_get( "/tickets/{$ticketId}/audits/{$auditId}" );
     }
     
     /**

@@ -61,7 +61,7 @@ class Entity extends AbstractEntity
     {
         return isset( $this['comments'] ) ? $this['comments'] : array();
     }
-    
+
     /**
      * THIS DOESN'T WORK -- NEED TO CREATE A COMMENT MODEL AND USE TICKET AUDITS API
      * Adds a comment to the ticket. Automatically saves as well. Use ArrayAccess approach at your own peril.

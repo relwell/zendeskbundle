@@ -13,9 +13,16 @@ No tickets for this user.
 	<tr>
 		<td colspan="2"><b>Comments</b></td>
 	</tr>
-	{% for comment in ticket.getComments %}
+	{% for comment in ticket.comments %}
 	<tr>
-		<td colspan="2">{{comment}}</td>
+		<td>{{comment.id}} 
+			{% if comment.isPublic %}
+			Public
+			{% else %}
+			Private
+			{% endif %}
+		</td>
+		<td>{{comment}}</td>
 	</tr>
 	{% endfor %}
 	<tr>

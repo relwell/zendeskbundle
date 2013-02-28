@@ -30,6 +30,7 @@ class DefaultController extends Controller
         }
         
         $ticketRepo = $this->get( 'zendesk.repos' )->get( 'Ticket' );
+        $auditRepo = $this->get( 'zendesk.repos' )->get( 'Audit' );
         $request = $this->getRequest();
         if ( $request->getMethod() == 'POST' ) {
             $data = $request->request->all();
@@ -37,15 +38,12 @@ class DefaultController extends Controller
             if ( empty( $ticket ) ) {
                 throw new \Exception( "No such ticket." );
             }
-            var_dump( $ticket->addComment( $data['comment'], $data['public'] == "on" ) );
+            $ticket->addComment( $data['comment'], !empty( $data['public'] ) );
         }
         
         $tickets = $ticketRepo->getTicketsRequestedByUser( $user );
         foreach ( $tickets as $ticket ) {
-            $comments = $ticket->getComments();
-            if (! empty( $comments ) ) {
-                var_dump($comments); die;
-            }
+            $ticket['comments'] = $auditRepo->getCommentsForTicket( $ticket );
         }
         $tickets->rewind();
         return $this->render( 'ZendeskBundle:Default:view-user-tickets.html.twig', array( 'tickets' => $tickets, 'user' => $user ) );
