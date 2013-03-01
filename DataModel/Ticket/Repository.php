@@ -24,9 +24,7 @@ class Repository extends AbstractRepository
     {
         $this->_currentResponse = $response;
         $entities = array();
-        if (! empty( $response['error'] ) ) {
-            throw new ApiResponseException( $response );
-        }
+        $this->_validateResponse( $response );
         if (! empty( $response['ticket'] ) ) {
             $entities[] = new Entity( $this, $response['ticket'] );
         } else if (! empty( $response['tickets'] ) ) {

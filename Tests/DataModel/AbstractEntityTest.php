@@ -127,7 +127,7 @@ class AbstractEntityTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::__get
+     * @covers Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::__set
      */
     public function test__set()
     {
