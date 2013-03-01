@@ -111,7 +111,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $mockEntity
             ->expects( $this->once() )
             ->method ( 'toArray' )
-            ->will   ( $this->returnValue( $userFields ) )
+            ->will   ( $this->returnValue( array( 'user' => $userFields ) ) )
         ;
         $this->apiService
             ->expects( $this->once() )
@@ -148,7 +148,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $mockEntity
             ->expects( $this->once() )
             ->method ( 'toArray' )
-            ->will   ( $this->returnValue( $userFields ) )
+            ->will   ( $this->returnValue( array( 'user' => $userFields ) ) )
         ;
         $mockEntity
             ->expects( $this->once() )
@@ -257,7 +257,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->apiService
             ->expects( $this->once() )
             ->method ( 'createUser' )
-            ->with   ( array( 'name' => $name, 'email' => $email ) )
+            ->with   ( array( 'user' => array( 'name' => $name, 'email' => $email ) ) )
             ->will   ( $this->returnValue( $mockResponse ) )
         ;
         $this->repo
@@ -268,7 +268,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         ;
         $this->assertEquals(
                 $mockEntity,
-                $this->repo->getForNameAndEmail( $name, $email )
+                $this->repo->getForNameAndEmail( $name, $email, true )
         );
     }
 }

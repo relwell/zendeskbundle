@@ -110,25 +110,25 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $this->zendesk
             ->expects( $this->at( 0 ) )
             ->method ( 'call' )
-            ->with   ( '/users', json_encode( $dataArray ), 'POST' )
+            ->with   ( '/users', json_encode( array( 'user' => $dataArray ) ), 'POST' )
             ->will   ( $this->returnValue( $responseArray ) )
         ;
         $this->assertEquals(
                 $responseArray,
                 $service->setZendeskApi( $this->zendesk )
-                        ->createUser   ( $argumentArray )
+                        ->createUser   ( array( 'user' => $argumentArray ) )
         );
         $dataArray['verified'] = false;
         $this->zendesk
             ->expects( $this->at( 0 ) )
             ->method ( 'call' )
-            ->with   ( '/users', json_encode( $dataArray ), 'POST' )
+            ->with   ( '/users', json_encode( array( 'user' => $dataArray ) ), 'POST' )
             ->will   ( $this->returnValue( $responseArray ) )
         ;
         $this->assertEquals(
                 $responseArray,
                 $service->setZendeskApi( $this->zendesk )
-                        ->createUser   ( $argumentArray, false )
+                        ->createUser   ( array( 'user' => $argumentArray ), false )
         );
         
     }
@@ -351,7 +351,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         ;
         $this->assertEquals(
                 $response,
-                $service->setZendeskApi( $this->zendesk )->updateTicket( $ticketId, $data )
+                $service->setZendeskApi( $this->zendesk )->updateTicket( $ticketId, $preparedData )
         );
     }
     
@@ -386,9 +386,11 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $ticketId = 123;
         $comment = 'This is my comment';
         $data = array(
-                'comment' => array(
-                        'public' => false,
-                        'body'   => $comment
+                'ticket' => array(
+                        'comment' => array(
+                                'public' => false,
+                                'body'   => $comment
+                                )
                         )
                 );
         $response = array( 'response' );
@@ -456,7 +458,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $_search->setAccessible( true );
         
         $queryString = 'foo:bar';
-        $path = "/search?" . http_build_query( array( 'query' => $queryString ) );
+        $path = "/search.json?" . http_build_query( array( 'query' => $queryString ) );
         $response = array( 'my response' );
         
         $apiService

@@ -88,7 +88,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreate()
     {
-        $ticketFields = array( 'foo' => 'bar' );
+        $ticketFields = array( 'ticket' => array( 'foo' => 'bar' ) );
         $this->_configure( array( 'createTicket' ) );
         $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
                            ->setConstructorArgs( array( $this->repo, $ticketFields ) )
@@ -104,7 +104,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->apiService
             ->expects( $this->once() )
             ->method ( 'createTicket' )
-            ->with   ( array( 'ticket' => $ticketFields ) )
+            ->with   ( $ticketFields )
             ->will   ( $this->returnValue( $response ) )
         ;
         $mockEntity
@@ -136,7 +136,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $mockEntity
             ->expects( $this->once() )
             ->method ( 'toArray' )
-            ->will   ( $this->returnValue( $ticketFields ) )
+            ->will   ( $this->returnValue( array( 'ticket' => $ticketFields ) ) )
         ;
         $mockEntity
             ->expects( $this->once() )
