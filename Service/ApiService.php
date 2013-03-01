@@ -15,25 +15,25 @@ class ApiService
      * Interface to core API request wrapper
      * @var \zendesk
      */
-    protected $api;
+    protected $_api;
     
     /**
      * Keeps track of subdomain, since zendesk API doesn't
      * @var string
      */
-    protected $subDomain;
+    protected $_subDomain;
     
     /**
      * Api key for zendesk 
      * @var string
      */
-    protected $apiKey;
+    protected $_apiKey;
     
     /**
      * User ID interacting with zendesk
      * @var string
      */
-    protected $user;
+    protected $_user;
     
     /**
      * Creates API wrapper
@@ -52,10 +52,10 @@ class ApiService
      */
     public function setZendeskApi( \zendesk $zendesk )
     {
-        $this->api       = $zendesk;
-        $this->apiKey    = $zendesk->api_key;
-        $this->user      = $zendesk->user;
-        $this->subDomain = preg_replace( '/https:\/\/([^\.]+)\.*/', '$1', $zendesk->base );
+        $this->_api       = $zendesk;
+        $this->_apiKey    = $zendesk->api_key;
+        $this->_user      = $zendesk->user;
+        $this->_subDomain = preg_replace( '/https:\/\/([^\.]+)\.*/', '$1', $zendesk->base );
         return $this;
     }
     
@@ -72,7 +72,7 @@ class ApiService
             throw new \Exception( 'Users need a name or an email to be created' );
         }
         $data['user']['verified'] = $verified;
-        return $this->api->call( '/users' , json_encode( $data ), 'POST' );
+        return $this->_api->call( '/users' , json_encode( $data ), 'POST' );
     }
     
     /**
@@ -81,7 +81,7 @@ class ApiService
      * @return array
      */
     public function updateUser( $userId, array $data ) {
-        return $this->api->call( "/users/{$userId}", json_encode( $data ), 'PUT' );
+        return $this->_api->call( "/users/{$userId}", json_encode( $data ), 'PUT' );
     }
     
     /**
@@ -142,7 +142,7 @@ class ApiService
      */
     public function createTicket( array $ticketData )
     {
-        return $this->api->call( '/tickets', json_encode( $ticketData ), 'POST' );
+        return $this->_api->call( '/tickets', json_encode( $ticketData ), 'POST' );
     }
     
     /**
@@ -193,7 +193,7 @@ class ApiService
      */
     public function updateTicket( $ticketId, array $data )
     {
-        return $this->api->call( "/tickets/{$ticketId}", json_encode( $data ), 'PUT' );
+        return $this->_api->call( "/tickets/{$ticketId}", json_encode( $data ), 'PUT' );
     }
     
     /**
@@ -370,6 +370,6 @@ class ApiService
      */
     protected function _get( $path )
     {
-        return $this->api->call( $path, '', 'GET' );
+        return $this->_api->call( $path, '', 'GET' );
     }
 }

@@ -61,6 +61,42 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::__construct
+     */
+    public function test__construct()
+    {
+        $apiKey = 1234;
+        $user = 'foo@bar.com';
+        $subDomain = 'whatever';
+        
+        $service = new ApiService( $apiKey, $user, $subDomain );
+        
+        foreach ( array( '_apiKey' => $apiKey, '_user' => $user ) as $property => $value )
+        {
+            $property = new ReflectionProperty( 'Malwarebytes\ZendeskBundle\Service\ApiService', $property );
+            $property->setAccessible( true );
+            $this->assertEquals(
+                    $value,
+                    $property->getValue( $service )
+            );
+        }
+        
+        $property = new ReflectionProperty( 'Malwarebytes\ZendeskBundle\Service\ApiService', '_subDomain' );
+        $property->setAccessible( true );
+        $this->assertEquals(
+                'whateverzendesk.com/api/v2',
+                $property->getValue( $service )
+        );
+        
+        $property = new ReflectionProperty( 'Malwarebytes\ZendeskBundle\Service\ApiService', '_api' );
+        $property->setAccessible( true );
+        $this->assertInstanceOf(
+                '\zendesk',
+                $property->getValue( $service )
+        );
+    }
+    
+    /**
      * @covers Malwarebytes\ZendeskBundle\Service\ApiService::_get
      */
     public function test_get()
@@ -328,7 +364,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertAttributeEquals(
                 $this->apiKey,
-                'apiKey',
+                '_apiKey',
                 $service
         );
     }
@@ -604,7 +640,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getTicketUntouchedSinceTime
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getTicketsUntouchedSinceTime
      */
     public function testGetTicketsUntouchedSinceTime()
     {
@@ -665,7 +701,8 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers Malwarebytes\ZendeskBundle\Service\ApiService::findUserByNameAndEmail
      */
-    public function testFindUserByNameAndEmail() {
+    public function testFindUserByNameAndEmail()
+    {
         $apiService = $this->apiService->setMethods( array( '_search' ) )->getMock();
         $response = array( 'my response' );
         $email = 'foo@bar.com';
@@ -679,6 +716,67 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
                 $response,
                 $apiService->findUserByNameAndEmail( $name, $email )
+        );
+    }
+    
+    /**
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::findUserByEmail
+     */
+    public function testFindUserByEmail()
+    {
+        $apiService = $this->apiService->setMethods( array( '_search' ) )->getMock();
+        $response = array( 'my response' );
+        $email = 'foo@bar.com';
+        $apiService
+            ->expects( $this->once() )
+            ->method ( '_search' )
+            ->with   ( sprintf( 'type:user email:%s', $email ) )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $apiService->findUserByEmail( $email )
+        );
+    }
+    
+    /**
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getAuditsForTicket
+     */
+    public function testGetAuditsForTicket()
+    {
+        $apiService = $this->apiService->setMethods( array( '_get' ) )->getMock();
+        $ticketId = 123;
+        $mockResponse = array( 'foo' );
+        $apiService
+            ->expects( $this->once() )
+            ->method ( '_get' )
+            ->with   ( "/tickets/{$ticketId}/audits" )
+            ->will   ( $this->returnValue( $mockResponse ) );
+        ;
+        $this->assertEquals(
+                $mockResponse,
+                $apiService->getAuditsForTicket( $ticketId )
+        );
+    }
+    
+    /**
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getAudit
+     */
+    public function testGetAudit()
+    {
+        $apiService = $this->apiService->setMethods( array( '_get' ) )->getMock();
+        $ticketId = 123;
+        $auditId = 456;
+        $mockResponse = array( 'foo' );
+        $apiService
+            ->expects( $this->once() )
+            ->method ( '_get' )
+            ->with   ( "/tickets/{$ticketId}/audits/{$auditId}" )
+            ->will   ( $this->returnValue( $mockResponse ) );
+        ;
+        $this->assertEquals(
+                $mockResponse,
+                $apiService->getAudit( $ticketId, $auditId )
         );
     }
 }

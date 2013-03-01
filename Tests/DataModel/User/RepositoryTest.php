@@ -176,7 +176,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers Malwarebytes\ZendeskBundle\DataModel\Users\Repository::getByDefaultSort
+     * @covers Malwarebytes\ZendeskBundle\DataModel\User\Repository::getByDefaultSort
      */
     public function testGetByDefaultSort()
     {
