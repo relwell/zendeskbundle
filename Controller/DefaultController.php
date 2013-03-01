@@ -49,6 +49,25 @@ class DefaultController extends Controller
         return $this->render( 'ZendeskBundle:Default:view-user-tickets.html.twig', array( 'tickets' => $tickets, 'user' => $user ) );
     }
     
+    public function createTicketAction( $userId )
+    {
+        $user = $this->get( 'zendesk.repos' )->get( 'User' )->getById( $userId );
+        if ( empty( $user ) ) {
+            throw new \Exception( "No user with ID {$userId}" );
+        }
+        $request = $this->getRequest();
+        if ( $request->getMethod() == 'POST' ) {
+            $data = $request->request->all();
+            $ticketRepo = $this->get( 'zendesk.repos' )->get( 'Ticket' );
+            $ticket = new DataModel\Ticket\Entity( $ticketRepo );
+            $ticket['requester_id'] = $userId;
+            $ticket['subject'] = $data['subject'];
+            $ticket['comment'] = array( 'body' => $data['comment'] );
+            $ticketRepo->save( $ticket );
+        }
+        return $this->redirect( $this->generateUrl( 'zendesk_user_tickets', array( 'userId' => $userId ) ) );
+    }
+    
     public function indexAction($name)
     {
         return $this->render('ZendeskBundle:Default:index.html.twig', array('name' => $name));

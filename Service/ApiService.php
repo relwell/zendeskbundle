@@ -142,9 +142,6 @@ class ApiService
      */
     public function createTicket( array $ticketData )
     {
-        if ( empty( $ticketData['requester_id'] ) ) {
-            throw new \UnexpectedValueException( "A new ticket requires a requester ID." );
-        }
         return $this->api->call( '/tickets', json_encode( $ticketData ), 'POST' );
     }
     
