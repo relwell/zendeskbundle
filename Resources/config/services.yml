@@ -1,7 +1,11 @@
 parameters:
     zendesk.apiservice.class: Malwarebytes\ZendeskBundle\Service\ApiService
+    zendesk.repositoryservice.class: Malwarebytes\ZendeskBundle\Service\RepositoryService
 
 services:
     zendesk.api:
         class: %zendesk.apiservice.class%
         arguments: [%zendesk_api_key%, %zendesk_api_user%, %zendesk_api_subdomain%]
+    zendesk.repos:
+        class: %zendesk.repositoryservice.class%
+        arguments: [@zendesk.api]

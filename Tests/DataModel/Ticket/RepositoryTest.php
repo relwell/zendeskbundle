@@ -84,11 +84,44 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::_buildFromResponse
+     */
+    public function test_buildFromResponseManyTicketsAsResults()
+    {
+        $this->_configure();
+        
+        $reflResp = new ReflectionProperty( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository', '_currentResponse' );
+        $reflResp->setAccessible( true );
+        $reflBuild = new ReflectionMethod( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository', '_buildFromResponse' );
+        $reflBuild->setAccessible( true );
+        
+        $response = array( 'results' => array( array( 'foo' => 'bar' ), array( 'baz' => 'qux' ) ) );
+        
+        $entities = $reflBuild->invoke( $this->repo, $response );
+        $this->assertEquals(
+                2,
+                count( $entities )
+        );
+        $this->assertInstanceOf(
+                'Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity',
+                $entities[0]
+        );
+        $this->assertInstanceOf(
+                'Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity',
+                $entities[1]
+        );
+        $this->assertEquals(
+                $response,
+                $reflResp->getValue( $this->repo )
+        );
+    }
+    
+    /**
      * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::_create
      */
     public function testCreate()
     {
-        $ticketFields = array( 'foo' => 'bar' );
+        $ticketFields = array( 'ticket' => array( 'foo' => 'bar' ) );
         $this->_configure( array( 'createTicket' ) );
         $mockEntity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
                            ->setConstructorArgs( array( $this->repo, $ticketFields ) )
@@ -104,7 +137,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->apiService
             ->expects( $this->once() )
             ->method ( 'createTicket' )
-            ->with   ( array( 'ticket' => $ticketFields ) )
+            ->with   ( $ticketFields )
             ->will   ( $this->returnValue( $response ) )
         ;
         $mockEntity
@@ -136,7 +169,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $mockEntity
             ->expects( $this->once() )
             ->method ( 'toArray' )
-            ->will   ( $this->returnValue( $ticketFields ) )
+            ->will   ( $this->returnValue( array( 'ticket' => $ticketFields ) ) )
         ;
         $mockEntity
             ->expects( $this->once() )

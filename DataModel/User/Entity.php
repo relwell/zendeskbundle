@@ -33,4 +33,13 @@ class Entity extends AbstractEntity
     {
         return 'id';
     }
+    
+    /**
+     * @see \Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::getType()
+     * @return string
+     */
+    public function getType()
+    {
+        return 'user';
+    }
 }

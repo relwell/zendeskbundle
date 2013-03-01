@@ -22,4 +22,19 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                 $ticket->getPrimaryKey()
         );
     }
+    
+    /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\User\Entity::getType
+     */
+    public function testGetType()
+    {
+        $ticket = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
+                       ->disableOriginalConstructor()
+                       ->setMethods( null )
+                       ->getMock();
+        $this->assertEquals(
+                'user',
+                $ticket->getType()
+        );
+    }
 }

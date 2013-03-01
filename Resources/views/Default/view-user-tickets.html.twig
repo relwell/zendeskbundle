@@ -1,0 +1,47 @@
+<h1>Tickets for {{user.name}}</h1>
+{% if not tickets.valid %}
+No tickets for this user.
+{% endif %}
+<form method="POST" name="comment" action="{{path( 'zendesk_user_ticket_create', { 'userId': user.id } )}}">
+	<label for="subject">Subject (required)</label><br>
+	<input type="text" name="subject">Subject</input><br>
+	<label for="comment">Comment (required)</label><br>
+	<textarea name="comment"></textarea><br>
+	<input type="submit" />
+</form>
+<h2>Tickets</h2>
+{% for ticket in tickets %}
+<table>
+{% for key, value in ticket.toArray.ticket %}
+	<tr>
+		<td>{{key}}</td>
+		<td>{{value}}</td>
+	</tr>
+{% endfor %}
+	<tr>
+		<td colspan="2"><b>Comments</b></td>
+	</tr>
+	{% for comment in ticket.comments %}
+	<tr>
+		<td>{{comment.id}} 
+			{% if comment.isPublic %}
+			Public
+			{% else %}
+			Private
+			{% endif %}
+		</td>
+		<td>{{comment}}</td>
+	</tr>
+	{% endfor %}
+	<tr>
+		<td colspan="2">
+			<form method="POST" name="comment">
+				<textarea name="comment"></textarea>
+				<input type="hidden" name="ticketId" value="{{ticket.id}}" />
+				<label for="public">Public:</label>
+				<input type="checkbox" name="public" checked="checked" />
+				<input type="submit" />
+			</form>
+		</td>
+</table>
+{% endfor %}

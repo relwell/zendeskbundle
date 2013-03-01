@@ -84,6 +84,39 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\User\Repository::_buildFromResponse
+     */
+    public function test_buildFromResponseManyUsersAsResult()
+    {
+        $this->_configure();
+        
+        $reflResp = new ReflectionProperty( 'Malwarebytes\ZendeskBundle\DataModel\User\Repository', '_currentResponse' );
+        $reflResp->setAccessible( true );
+        $reflBuild = new ReflectionMethod( 'Malwarebytes\ZendeskBundle\DataModel\User\Repository', '_buildFromResponse' );
+        $reflBuild->setAccessible( true );
+        
+        $response = array( 'results' => array( array( 'foo' => 'bar' ), array( 'baz' => 'qux' ) ) );
+        
+        $entities = $reflBuild->invoke( $this->repo, $response );
+        $this->assertEquals(
+                2,
+                count( $entities )
+        );
+        $this->assertInstanceOf(
+                'Malwarebytes\ZendeskBundle\DataModel\User\Entity',
+                $entities[0]
+        );
+        $this->assertInstanceOf(
+                'Malwarebytes\ZendeskBundle\DataModel\User\Entity',
+                $entities[1]
+        );
+        $this->assertEquals(
+                $response,
+                $reflResp->getValue( $this->repo )
+        );
+    }
+    
+    /**
      * @covers Malwarebytes\ZendeskBundle\DataModel\User\Repository::_create
      */
     public function testCreate()
@@ -111,7 +144,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $mockEntity
             ->expects( $this->once() )
             ->method ( 'toArray' )
-            ->will   ( $this->returnValue( $userFields ) )
+            ->will   ( $this->returnValue( array( 'user' => $userFields ) ) )
         ;
         $this->apiService
             ->expects( $this->once() )
@@ -148,7 +181,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $mockEntity
             ->expects( $this->once() )
             ->method ( 'toArray' )
-            ->will   ( $this->returnValue( $userFields ) )
+            ->will   ( $this->returnValue( array( 'user' => $userFields ) ) )
         ;
         $mockEntity
             ->expects( $this->once() )
@@ -176,7 +209,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers Malwarebytes\ZendeskBundle\DataModel\Users\Repository::getByDefaultSort
+     * @covers Malwarebytes\ZendeskBundle\DataModel\User\Repository::getByDefaultSort
      */
     public function testGetByDefaultSort()
     {
@@ -257,7 +290,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->apiService
             ->expects( $this->once() )
             ->method ( 'createUser' )
-            ->with   ( array( 'name' => $name, 'email' => $email ) )
+            ->with   ( array( 'user' => array( 'name' => $name, 'email' => $email ) ) )
             ->will   ( $this->returnValue( $mockResponse ) )
         ;
         $this->repo
@@ -268,7 +301,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         ;
         $this->assertEquals(
                 $mockEntity,
-                $this->repo->getForNameAndEmail( $name, $email )
+                $this->repo->getForNameAndEmail( $name, $email, true )
         );
     }
 }

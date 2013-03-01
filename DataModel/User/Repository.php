@@ -5,7 +5,7 @@
 namespace Malwarebytes\ZendeskBundle\DataModel\User;
 use Malwarebytes\ZendeskBundle\DataModel\Paginator;
 use Malwarebytes\ZendeskBundle\DataModel\AbstractEntity;
-
+use Malwarebytes\ZendeskBundle\DataModel\ApiResponseException;
 use Malwarebytes\ZendeskBundle\DataModel\AbstractRepository;
 /**
  * Repository for users.
@@ -23,12 +23,18 @@ class Repository extends AbstractRepository
     {
         $this->_currentResponse = $response;
         $users = array();
+        $this->_validateResponse( $response );
         if (! empty( $response['user'] ) ) {
             $users[] = new Entity( $this, $response['user'] );
         } else if (! empty( $response['users'] ) ) {
             foreach ( $response['users'] as $user )
             {
                 $users[] = new Entity( $this, $user );
+            }
+        } else if (! empty( $response['results'] ) ) {
+            foreach ( $response['results'] as $result )
+            {
+                $users[] = new Entity( $this, $result );
             }
         }
         return $users;
@@ -42,7 +48,7 @@ class Repository extends AbstractRepository
      */
     protected function _create( AbstractEntity $instance )
     {
-        $response = $this->_apiService->createUser( array( 'user' => $instance->toArray() ), true );
+        $response = $this->_apiService->createUser( $instance->toArray(), true );
         if ( $response['user'] ) {
             $instance->setFields( $response['user'] );
         }
@@ -57,7 +63,7 @@ class Repository extends AbstractRepository
      */
     protected function _update( AbstractEntity $instance )
     {
-        $response = $this->_apiService->updateUser( $instance['id'], array( 'user' => $instance->toArray() ) );
+        $response = $this->_apiService->updateUser( $instance['id'], $instance->toArray() );
         if ( $response['user'] ) {
             $instance->setFields( $response['user'] );
         }
@@ -86,17 +92,18 @@ class Repository extends AbstractRepository
     }
     
     /**
-     * Tries to grab a user based on name and email. If it doesn't exist, we create one.
+     * Tries to grab a user based on name and email. If it doesn't exist, we create one (if $create is true).
      * @var string $name
      * @var string $email
-     * @return Entity
+     * @var bool $create
+     * @return Entity|null
      */
-    public function getForNameAndEmail( $name, $email )
+    public function getForNameAndEmail( $name, $email, $create = false )
     {
         $entities = $this->_buildFromResponse( $this->_apiService->findUserByNameAndEmail( $name, $email ) );
-        if ( empty( $entities ) ) {
+        if ( $create && empty( $entities ) ) {
             $data = array( 'name' => $name, 'email' => $email );
-            $entities = $this->_buildFromResponse( $this->_apiService->createUser( $data ) );
+            $entities = $this->_buildFromResponse( $this->_apiService->createUser( array( 'user' => $data  ) ) );
         }
         return array_shift( $entities );
     }

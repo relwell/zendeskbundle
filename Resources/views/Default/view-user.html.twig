@@ -1,0 +1,15 @@
+<h1>{{name}}</h1>
+<h2>{{email}}</h2>
+{% if user %}
+<table>
+	<a href="{{ url('zendesk_user_tickets', { 'userId': user.id }) }}">View this user's tickets</a>
+	{% for key, value in user %}
+		<tr>
+			<td>{{key}}</td>
+			<td>{{value}}</td>
+		</tr>
+	{% endfor %}
+</table>
+{% else %}
+This user does not exist. (<a href="?create=true">Create them!</a>)
+{% endif %}

@@ -127,7 +127,7 @@ class AbstractEntityTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::__get
+     * @covers Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::__set
      */
     public function test__set()
     {
@@ -247,11 +247,16 @@ class AbstractEntityTest extends \PHPUnit_Framework_TestCase
      */
     public function testToArray()
     {
-        $arr = array( 'id' => 123 );
-        $entity = $this->entity->setMethods( array( null ) )->getMockForAbstractClass();
+        $arr = array( 'entity' => array( 'id' => 123 ) );
+        $entity = $this->entity->setMethods( array( 'getType' ) )->getMockForAbstractClass();
+        $entity
+            ->expects( $this->once() )
+            ->method ( 'getType' )
+            ->will   ( $this->returnValue( 'entity' ) )
+        ;
         $fieldsRefl = new ReflectionProperty( '\Malwarebytes\ZendeskBundle\DataModel\AbstractEntity', '_fields' );
         $fieldsRefl->setAccessible( true );
-        $fieldsRefl->setValue( $entity, $arr );
+        $fieldsRefl->setValue( $entity, $arr['entity'] );
         $this->assertEquals(
                 $arr,
                 $entity->toArray()

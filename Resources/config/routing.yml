@@ -6,3 +6,10 @@ zendesk_homepage:
     pattern:  /user/view/{name}/{email}
     defaults: { _controller: ZendeskBundle:Default:accessUser }
     
+zendesk_user_tickets:
+    pattern:  /user/tickets/{userId}
+    defaults: { _controller: ZendeskBundle:Default:userTickets }
+    
+zendesk_user_ticket_create:
+    pattern:  /user/tickets/{userId}/create
+    defaults: { _controller: ZendeskBundle:Default:createTicket }

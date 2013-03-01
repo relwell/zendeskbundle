@@ -39,11 +39,31 @@ class Entity extends AbstractEntity
      * @see \Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::getPrimaryKey()
      * @return string
      */
-    public function getPrimaryKey() {
+    public function getPrimaryKey()
+    {
         return 'id';
     }
     
     /**
+     * @see \Malwarebytes\ZendeskBundle\DataModel\AbstractEntity::getType()
+     * @return string
+     */
+    public function getType()
+    {
+        return 'ticket';
+    }
+    
+    /**
+     * Returns comments
+     * @return array
+     */
+    public function getComments()
+    {
+        return isset( $this['comments'] ) ? $this['comments'] : array();
+    }
+
+    /**
+     * THIS DOESN'T WORK -- NEED TO CREATE A COMMENT MODEL AND USE TICKET AUDITS API
      * Adds a comment to the ticket. Automatically saves as well. Use ArrayAccess approach at your own peril.
      * @return Entity 
      */

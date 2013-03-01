@@ -24,6 +24,42 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity::getType
+     */
+    public function testGetType()
+    {
+        $ticket = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
+                       ->disableOriginalConstructor()
+                       ->setMethods( null )
+                       ->getMock();
+        $this->assertEquals(
+                'ticket',
+                $ticket->getType()
+        );
+    }
+    
+    /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity::getComments
+     */
+    public function testGetComments()
+    {
+        $ticket = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
+                       ->disableOriginalConstructor()
+                       ->setMethods( null )
+                       ->getMock();
+        
+        $this->assertEquals(
+                array(),
+                $ticket->getComments()
+        );
+        $ticket['comments'] = array( 'foo' );
+        $this->assertEquals(
+                array( 'foo' ),
+                $ticket->getComments()
+        );
+    }
+    
+    /**
      * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity::addComment
      */
     public function testAddComment()

@@ -80,6 +80,20 @@ abstract class AbstractRepository
     }
     
     /**
+     * Tests for errors.
+     * @param array $response
+     * @throws ApiResponseException
+     * @return boolean
+     */
+    protected function _validateResponse( array $response )
+    {
+        if (! empty( $response['error'] ) ) {
+            throw new ApiResponseException( $response );
+        }
+        return true;
+    }
+    
+    /**
      * Returns a single instance given the appropriate ID.
      * This requires accessing a response from the API and then apply the appropriate fields to the given model. 
      * @param unknown_type $id

@@ -70,6 +70,11 @@ abstract class AbstractEntity implements \ArrayAccess
     abstract public function getPrimaryKey();
     
     /**
+     * Allows us to determine the string type
+     */
+    abstract public function getType();
+    
+    /**
      * Helps us determine whether this exists in the API.
      */
     public function exists()
@@ -158,6 +163,6 @@ abstract class AbstractEntity implements \ArrayAccess
      */
     public function toArray()
     {
-        return $this->_fields;
+        return array( $this->getType() => $this->_fields );
     }
 }

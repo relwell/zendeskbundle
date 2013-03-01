@@ -15,25 +15,25 @@ class ApiService
      * Interface to core API request wrapper
      * @var \zendesk
      */
-    protected $api;
+    protected $_api;
     
     /**
      * Keeps track of subdomain, since zendesk API doesn't
      * @var string
      */
-    protected $subDomain;
+    protected $_subDomain;
     
     /**
      * Api key for zendesk 
      * @var string
      */
-    protected $apiKey;
+    protected $_apiKey;
     
     /**
      * User ID interacting with zendesk
      * @var string
      */
-    protected $user;
+    protected $_user;
     
     /**
      * Creates API wrapper
@@ -52,10 +52,10 @@ class ApiService
      */
     public function setZendeskApi( \zendesk $zendesk )
     {
-        $this->api       = $zendesk;
-        $this->apiKey    = $zendesk->api_key;
-        $this->user      = $zendesk->user;
-        $this->subDomain = preg_replace( '/https:\/\/([^\.]+)\.*/', '$1', $zendesk->base );
+        $this->_api       = $zendesk;
+        $this->_apiKey    = $zendesk->api_key;
+        $this->_user      = $zendesk->user;
+        $this->_subDomain = preg_replace( '/https:\/\/([^\.]+)\.*/', '$1', $zendesk->base );
         return $this;
     }
     
@@ -68,11 +68,11 @@ class ApiService
      */
     public function createUser( array $data, $verified = true )
     {
-        if ( empty( $data['name'] ) || empty( $data['email'] ) ) {
+        if ( empty( $data['user']['name'] ) || empty( $data['user']['email'] ) ) {
             throw new \Exception( 'Users need a name or an email to be created' );
         }
-        $data['verified'] = $verified;
-        return $this->api->call( '/users' , json_encode( $data ), 'POST' );
+        $data['user']['verified'] = $verified;
+        return $this->_api->call( '/users' , json_encode( $data ), 'POST' );
     }
     
     /**
@@ -81,7 +81,7 @@ class ApiService
      * @return array
      */
     public function updateUser( $userId, array $data ) {
-        return $this->api->call( "/users/{$userId}", json_encode( $data ), 'PUT' );
+        return $this->_api->call( "/users/{$userId}", json_encode( $data ), 'PUT' );
     }
     
     /**
@@ -142,10 +142,7 @@ class ApiService
      */
     public function createTicket( array $ticketData )
     {
-        if ( empty( $ticketData['requester_id'] ) ) {
-            throw new \UnexpectedValueException( "A new ticket requires a requester ID." );
-        }
-        return $this->api->call( '/tickets', json_encode( $ticketData ), 'POST' );
+        return $this->_api->call( '/tickets', json_encode( $ticketData ), 'POST' );
     }
     
     /**
@@ -169,6 +166,17 @@ class ApiService
     }
     
     /**
+     * This one is more forgiving.
+     * @param string $name
+     * @param string $email
+     * @return array
+     */
+    public function findUserByEmail( $email )
+    {
+        return $this->_search( sprintf( 'type:user email:%s', $email ) );
+    }
+    
+    /**
      * Returns an array representing ticket fields
      * @param int $ticketId
      * @return array
@@ -185,7 +193,7 @@ class ApiService
      */
     public function updateTicket( $ticketId, array $data )
     {
-        return $this->api->call( "/tickets/{$ticketId}", json_encode( array( 'ticket' => $data ) ), 'PUT' );
+        return $this->_api->call( "/tickets/{$ticketId}", json_encode( $data ), 'PUT' );
     }
     
     /**
@@ -224,12 +232,13 @@ class ApiService
     {
         return $this->updateTicket(
                 $ticketId,
-                array(
+                array( 'ticket' => array(
                         'comment' => array(
                                 'public' => $public,
                                 'body'   => $comment
                                 )
                         )
+                    )
                 );
     }
     
@@ -322,13 +331,35 @@ class ApiService
     }
     
     /**
+     * Returns all audits for a ticket.
+     * @param int $ticketId
+     * @return array
+     */
+    public function getAuditsForTicket( $ticketId )
+    {
+        return $this->_get( "/tickets/{$ticketId}/audits" );
+    }
+    
+    /**
+     * Grabs a specific audit for a ticket.
+     * @param int $ticketId
+     * @param int $auditId
+     * @return array
+     */
+    public function getAudit( $ticketId, $auditId )
+    {
+        return $this->_get( "/tickets/{$ticketId}/audits/{$auditId}" );
+    }
+    
+    /**
      * Provides a common interface for searching via API.
      * @param string $queryString
      * @return array
      */
     protected function _search( $queryString )
     {
-        $path = "/search?" . http_build_query( array( 'query' => $queryString ) );
+        // we have to add json here because the lib we're using sucks apparently
+        $path = "/search.json?" . http_build_query( array( 'query' => $queryString ) );
         return $this->_get( $path );
     }
     
@@ -339,6 +370,6 @@ class ApiService
      */
     protected function _get( $path )
     {
-        return $this->api->call( $path, '', 'GET' );
+        return $this->_api->call( $path, '', 'GET' );
     }
 }

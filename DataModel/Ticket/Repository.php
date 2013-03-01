@@ -7,6 +7,7 @@ use Malwarebytes\ZendeskBundle\DataModel\AbstractEntity;
 use Malwarebytes\ZendeskBundle\DataModel\AbstractRepository;
 use Malwarebytes\ZendeskBundle\DataModel\User\Entity as User;
 use Malwarebytes\ZendeskBundle\Service\ApiService;
+use Malwarebytes\ZendeskBundle\DataModel\ApiResponseException;
 /**
  * Responsible for accessing and managing one or more ticket entities.
  * @author relwell
@@ -23,12 +24,18 @@ class Repository extends AbstractRepository
     {
         $this->_currentResponse = $response;
         $entities = array();
+        $this->_validateResponse( $response );
         if (! empty( $response['ticket'] ) ) {
             $entities[] = new Entity( $this, $response['ticket'] );
         } else if (! empty( $response['tickets'] ) ) {
             foreach ( $response['tickets'] as $ticket )
             {
                 $entities[] = new Entity( $this, $ticket );
+            }
+        } else if (! empty( $response['results'] ) ) {
+            foreach ( $response['results'] as $result )
+            {
+                $entities[] = new Entity( $this, $result );
             }
         }
         return $entities;
@@ -42,7 +49,7 @@ class Repository extends AbstractRepository
      */
     protected function _create( AbstractEntity $instance )
     {
-        $response = $this->_apiService->createTicket( array( 'ticket' => $instance->toArray() ) );
+        $response = $this->_apiService->createTicket( $instance->toArray() );
         if ( $response['ticket'] ) {
             $instance->setFields( $response['ticket'], true );
         }
@@ -57,7 +64,7 @@ class Repository extends AbstractRepository
      */
     protected function _update( AbstractEntity $instance )
     {
-        $response = $this->_apiService->updateTicket( $instance['id'], array( 'ticket' => $instance->toArray() ) );
+        $response = $this->_apiService->updateTicket( $instance['id'], $instance->toArray() );
         if ( $response['ticket'] ) {
             $instance->setFields( $response['ticket'], true );
         }

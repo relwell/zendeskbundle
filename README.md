@@ -1,10 +1,11 @@
-h1. Dependencies
-
-h2. Zendesk API
-This library requires a Zendesk API available at GitHub.
+Dependencies
+================
+Zendesk API Client
+----------------
+This library requires a Zendesk API client available on GitHub.
 Since this isn't controlled by Composer call the following from your application's root directory:
  
-    git clone git://github.com/ludwigzzz/Zendesk-API.git vendor/zendesk-api
+    git clone git://github.com/relwell/Zendesk-API.git vendor/zendesk-api
 
 In app/autoload.php, add the following lines before AnnotationRegistry::registerLoader(array($loader, 'loadClass')):
 
