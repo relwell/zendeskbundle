@@ -8,7 +8,7 @@ namespace Malwarebytes\ZendeskBundle\Tests\Service;
 require_once( __DIR__. '/../../Service/ApiService.php' );
 
 use Malwarebytes\ZendeskBundle\Service\ApiService;
-use \zendesk;
+use ZendeskApi\Client;
 use \ReflectionProperty;
 use \ReflectionMethod;
 /**
@@ -23,7 +23,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     protected $apiService;
     
     /**
-     * @var \zendesk
+     * @var \ZendeskApi\Client
      */
     protected $zendesk;
     
@@ -54,7 +54,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $this->subDomain = 'subdomain';
         $this->user      = 'user';
         
-        $this->zendesk = $this->getMockBuilder( '\zendesk' )
+        $this->zendesk = $this->getMockBuilder( 'ZendeskApi\Client' )
                               ->setConstructorArgs( array( $this->apiKey, $this->subDomain, $this->user ) )
                               ->setMethods( array( 'call' ) )
                               ->getMock();
@@ -91,7 +91,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $property = new ReflectionProperty( 'Malwarebytes\ZendeskBundle\Service\ApiService', '_api' );
         $property->setAccessible( true );
         $this->assertInstanceOf(
-                '\zendesk',
+                'ZendeskApi\Client',
                 $property->getValue( $service )
         );
     }

@@ -3,7 +3,7 @@
  * Class definition for Malwarebytes\ZendeskBundle\Service\ApiService
  */
 namespace Malwarebytes\ZendeskBundle\Service;
-use \zendesk;
+use \ZendeskApi\Client;
 /**
  * Wraps the <a href="https://github.com/ludwigzzz/Zendesk-API">Zendesk API</a> cURL library 
  * with logic, and also accommodates dependency injection with Symfony2
@@ -13,7 +13,7 @@ class ApiService
 {
     /**
      * Interface to core API request wrapper
-     * @var \zendesk
+     * @var \ZendeskApi\Client
      */
     protected $_api;
     
@@ -43,14 +43,14 @@ class ApiService
      */
     public function __construct( $apiKey, $user, $subDomain )
     {
-        $this->setZendeskApi( new zendesk( $apiKey, $user, $subDomain ) );
+        $this->setZendeskApi( new Client( $apiKey, $user, $subDomain ) );
     }
     
     /**
      * Registers a newly configured zendesk api wrapper
-     * @param \zendesk $zendesk
+     * @param ZendeskApi\Client $zendesk
      */
-    public function setZendeskApi( \zendesk $zendesk )
+    public function setZendeskApi( Client $zendesk )
     {
         $this->_api       = $zendesk;
         $this->_apiKey    = $zendesk->api_key;
@@ -64,7 +64,7 @@ class ApiService
      * Returns a json-decoded array from the response
      * @param array $data
      * @param bool $verified
-     * @return array return value of \zendesk::call
+     * @return array return value of ZendeskApi\Client::call
      */
     public function createUser( array $data, $verified = true )
     {

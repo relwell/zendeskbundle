@@ -9,7 +9,7 @@ Since this isn't controlled by Composer call the following from your application
 
 In app/autoload.php, add the following lines before AnnotationRegistry::registerLoader(array($loader, 'loadClass')):
 
-    $loader->addClassMap( array( 'zendesk' =>  __DIR__.'/../vendor/zendesk-api/zendesk.php' ) );
+    $loader->addClassMap( array( 'ZendeskApi\Client' =>  __DIR__.'/../vendor/zendesk-api/ZendeskApi/Client.php' ) );
 
 Add the following fields to your application's parameters.yml:
 
