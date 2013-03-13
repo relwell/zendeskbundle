@@ -640,9 +640,9 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getTicketsUntouchedSinceTime
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getUnresolvedTicketsUntouchedSince
      */
-    public function testGetTicketsUntouchedSinceTime()
+    public function testGetUnresolvedTicketsUntouchedSince()
     {
         $apiService = $this->apiService->setMethods( array( '_search' ) )->getMock();
         $response = array( 'my response' );
@@ -650,12 +650,12 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $apiService
             ->expects( $this->any() )
             ->method ( '_search' )
-            ->with   ( sprintf( 'type:ticket updated_at<%s', gmdate( 'Y-m-d\TH:i:s\Z', $timestamp ) ) )
+            ->with   ( sprintf( 'type:ticket status<solved updated_at<%s', gmdate( 'Y-m-d\TH:i:s\Z', $timestamp ) ) )
             ->will   ( $this->returnValue( $response ) )
         ;
         $this->assertEquals(
                 $response,
-                $apiService->getTicketsUntouchedSinceTime( $timestamp )
+                $apiService->getUnresolvedTicketsUntouchedSince( $timestamp )
         );
     }
     

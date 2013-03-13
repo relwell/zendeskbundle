@@ -317,6 +317,9 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         );
     }
     
+    /**
+     * @covers  Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::addCommentToTicket
+     */
     public function testAddCommentToTicketNotExists()
     {
         $this->_configure( array( 'addCommentToTicket' ) );
@@ -338,6 +341,9 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         );
     }
     
+    /**
+     * @covers  Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::addCommentToTicket
+     */
     public function testAddCommentToTicketExists()
     {
         $this->_configure( array( 'addCommentToTicket' ) );
@@ -372,6 +378,35 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
                 $mockEntity,
                 $this->repo->addCommentToTicket( $mockEntity, 'foo' )
+        );
+    }
+    
+    /**
+     * @covers  Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::getTicketsOlderThan
+     */
+    public function testGetTicketsOlderThan()
+    {
+        $this->_configure( array( 'getUnresolvedTicketsUntouchedSince' ), array( '_buildPaginatorFromResponse' ) );
+        $mockPaginator = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Paginator' )
+                              ->disableOriginalConstructor()
+                              ->getMock();
+        $timestamp = time();
+        $response = array( 'tickets' => array() );
+        $this->apiService
+            ->expects( $this->once() )
+            ->method ( 'getUnresolvedTicketsUntouchedSince' )
+            ->with   ( $timestamp )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->repo
+            ->expects( $this->once() )
+            ->method ( '_buildPaginatorFromResponse' )
+            ->with   ( $response )
+            ->will   ( $this->returnValue( $mockPaginator ) )
+        ;
+        $this->assertEquals(
+                $mockPaginator,
+                $this->repo->getOpenTicketsOlderThan( $timestamp )
         );
     }
 }

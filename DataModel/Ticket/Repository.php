@@ -124,4 +124,13 @@ class Repository extends AbstractRepository
         }
         return $this->_buildPaginatorFromResponse( $this->_apiService->getTicketsRequestedByUser( $user['id'] ) );
     }
+    
+    /**
+     * Returns all tickets older than the provided timestamp (long int)
+     * @param int $timestamp
+     */
+    public function getOpenTicketsOlderThan( $unixTimestamp )
+    {
+        return $this->_buildPaginatorFromResponse( $this->_apiService->getUnresolvedTicketsUntouchedSince( $unixTimestamp ) );
+    }
 }

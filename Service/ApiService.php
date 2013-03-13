@@ -5,8 +5,8 @@
 namespace Malwarebytes\ZendeskBundle\Service;
 use \ZendeskApi\Client;
 /**
- * Wraps the <a href="https://github.com/ludwigzzz/Zendesk-API">Zendesk API</a> cURL library 
- * with logic, and also accommodates dependency injection with Symfony2
+ * Encapsulates specific business logic using the
+ * <a href="https://github.com/relwell/Zendesk-API">Zendesk API Client</a> library
  * @author Robert Elwell
  */
 class ApiService
@@ -294,10 +294,10 @@ class ApiService
      * you would want to pass something like time() - 86400.
      * @param int $time 
      */
-    public function getTicketsUntouchedSinceTime( $time )
+    public function getUnresolvedTicketsUntouchedSince( $time )
     {
         $timestamp = gmdate( 'Y-m-d\TH:i:s\Z', $time );
-        return $this->_search( sprintf( 'type:ticket updated_at<%s', $timestamp ) );
+        return $this->_search( sprintf( 'type:ticket status<solved updated_at<%s', $timestamp ) );
     }
     
     /**

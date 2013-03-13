@@ -68,6 +68,16 @@ class DefaultController extends Controller
         return $this->redirect( $this->generateUrl( 'zendesk_user_tickets', array( 'userId' => $userId ) ) );
     }
     
+    public function viewTicketAction( $ticket )
+    {
+        return $this->render( 'ZendeskBundle:Default:ticket.html.twig', array( 'ticket' => $ticket ) );
+    }
+    
+    public function pastDueTicketsAction( $unixtime )
+    {
+        $tickets = $this->get( 'zendesk.repos' )->get( 'Ticket' )->getOpenTicketsOlderThan( $unixtime );
+    }
+    
     public function indexAction($name)
     {
         return $this->render('ZendeskBundle:Default:index.html.twig', array('name' => $name));
