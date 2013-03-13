@@ -63,11 +63,26 @@ class Entity extends AbstractEntity
     }
 
     /**
-     * THIS DOESN'T WORK -- NEED TO CREATE A COMMENT MODEL AND USE TICKET AUDITS API
      * Adds a comment to the ticket. Automatically saves as well. Use ArrayAccess approach at your own peril.
+     * @param string $comment
+     * @param bool $public
      * @return Entity 
      */
-    public function addComment( $comment, $public = true ) {
+    public function addComment( $comment, $public = true )
+    {
         return $this->_repository->addCommentToTicket( $this, $comment, $public );
     }
+
+    /**
+     * Adds a user as collaborator on this ticket
+     * @param Malwarebytes\ZendeskBundle\DataModel\User\Entity|int
+     * @return Entity
+     */
+    public function addCollaborator( $userOrId )
+    {
+        $id = is_int( $userOrId ) ? $userOrId : $user['id'];
+        $this['collaborator_ids'] = empty( $this['collaborator_ids'] ) ? array( $id ) : array_merge( $this['collaborator_ids'], array( $id ) );
+        return $this->_repository->save( $this );
+    }
+
 }
