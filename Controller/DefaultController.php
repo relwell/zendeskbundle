@@ -70,12 +70,16 @@ class DefaultController extends Controller
     
     public function viewTicketAction( $ticket )
     {
+        if (! $ticket instanceof \MalwareBytes\ZendeskBundle\DataModel\Ticket\Entity ) {
+            $ticket = $this->get( 'zendesk.repos' )->get( 'Ticket' )->getById( $ticket );
+        }
         return $this->render( 'ZendeskBundle:Default:ticket.html.twig', array( 'ticket' => $ticket ) );
     }
     
-    public function pastDueTicketsAction( $unixtime )
+    public function untouchedTicketsAction( $unixtime )
     {
         $tickets = $this->get( 'zendesk.repos' )->get( 'Ticket' )->getOpenTicketsOlderThan( $unixtime );
+        return $this->render( 'ZendeskBundle:Default:tickets.html.twig', array( 'tickets' => $tickets ) );
     }
     
     public function indexAction($name)

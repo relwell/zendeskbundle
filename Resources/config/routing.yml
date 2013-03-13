@@ -13,3 +13,11 @@ zendesk_user_tickets:
 zendesk_user_ticket_create:
     pattern:  /user/tickets/{userId}/create
     defaults: { _controller: ZendeskBundle:Default:createTicket }
+    
+zendesk_ticket:
+    pattern: /ticket/{ticket}
+    defaults: { _controller: ZendeskBundle:Default:viewTicket }
+
+zendesk_old_tickets:
+    pattern: /opentickets/untouchedsince/{unixtime}
+    defaults: { _controller: ZendeskBundle:Default:untouchedTickets }

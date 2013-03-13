@@ -650,7 +650,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $apiService
             ->expects( $this->any() )
             ->method ( '_search' )
-            ->with   ( sprintf( 'type:ticket status<solved updated_at<%s', gmdate( 'Y-m-d\TH:i:s\Z', $timestamp ) ) )
+            ->with   ( sprintf( 'type:ticket status<solved updated<%s', gmdate( 'Y-m-d\TH:i:s\Z', $timestamp ) ) )
             ->will   ( $this->returnValue( $response ) )
         ;
         $this->assertEquals(

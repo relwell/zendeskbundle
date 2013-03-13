@@ -382,9 +382,9 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @covers  Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::getTicketsOlderThan
+     * @covers  Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository::getOpenTicketsOlderThan
      */
-    public function testGetTicketsOlderThan()
+    public function testGetOpenTicketsOlderThan()
     {
         $this->_configure( array( 'getUnresolvedTicketsUntouchedSince' ), array( '_buildPaginatorFromResponse' ) );
         $mockPaginator = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\Paginator' )

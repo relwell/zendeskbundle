@@ -297,7 +297,7 @@ class ApiService
     public function getUnresolvedTicketsUntouchedSince( $time )
     {
         $timestamp = gmdate( 'Y-m-d\TH:i:s\Z', $time );
-        return $this->_search( sprintf( 'type:ticket status<solved updated_at<%s', $timestamp ) );
+        return $this->_search( sprintf( 'type:ticket status<solved updated<%s', $timestamp ) );
     }
     
     /**
