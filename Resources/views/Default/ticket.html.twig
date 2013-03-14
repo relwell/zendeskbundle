@@ -18,7 +18,8 @@
         <tr>
              <td colspan="2">
                  <b>Add Collaborator</b>
-                 <form method="POST" name="collab" action="{{path('zendesk_add_comment', {'ticket':ticket.toArray.ticket.id})}}">
+                 <form method="POST" name="collab" action="{{path('zendesk_add_collab', {'ticket':ticket.toArray.ticket.id})}}">
+                     <input type="hidden" name="ticketId" value="{{ticket.id}}" />
                      <label for="email">Email:</label>
                      <input type="text" name="email"></input>
                      <label for="name">Name:</label>

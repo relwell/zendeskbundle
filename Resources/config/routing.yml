@@ -18,6 +18,10 @@ zendesk_add_comment:
     pattern:  /ticket/{ticket}/comment
     defaults: { _controller: ZendeskBundle:Default:addComment }
     
+zendesk_add_collab:
+    pattern:  /ticket/{ticket}/collab
+    defaults: { _controller: ZendeskBundle:Default:addCollaborator }
+    
 zendesk_ticket:
     pattern: /ticket/{ticket}
     defaults: { _controller: ZendeskBundle:Default:viewTicket }

@@ -47,7 +47,7 @@ class DefaultController extends Controller
         $request = $this->getRequest();
         if ( $request->getMethod() == 'POST' ) {
             $data = $request->request->all();
-            $ticket = $this->get( 'zendesk.repo' )->get( 'Ticket' )->getById( $data['ticketId'] );
+            $ticket = $this->get( 'zendesk.repos' )->get( 'Ticket' )->getById( $data['ticketId'] );
             if ( empty( $ticket ) ) {
                 throw new \Exception( "No such ticket." );
             }
@@ -85,11 +85,11 @@ class DefaultController extends Controller
         if (! $ticket ) {
             throw new \Exception( "no ticket found" );
         }
-        $user = $this->get( 'zendesk.respos' )->get( 'User' )->getForNameAndEmail( $data['name'], $data['email'] );
+        $user = $this->get( 'zendesk.repos' )->get( 'User' )->getForNameAndEmail( $data['name'], $data['email'] );
         if ( $user ) {
             $ticket->addCollaborator( $user );
         }
-        return $this->redirect( $this->generateUrl( 'zendesk_view_ticket', array( 'ticket' => $ticket ) ) );
+        return $this->redirect( $this->generateUrl( 'zendesk_ticket', array( 'ticket' => $ticket['id'] ) ) );
     }
     
     public function viewTicketAction( $ticket )
