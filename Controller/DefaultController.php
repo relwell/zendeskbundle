@@ -33,11 +33,13 @@ class DefaultController extends Controller
         $auditRepo = $this->get( 'zendesk.repos' )->get( 'Audit' );
         
         $tickets = $ticketRepo->getTicketsRequestedByUser( $user );
+        $ticketsRendered = array();
         foreach ( $tickets as $ticket ) {
             $ticket['comments'] = $auditRepo->getCommentsForTicket( $ticket );
+            $ticketsRendered[] = $this->render( 'ZendeskBundle:Default:ticket.html.twig', array( 'ticket' => $ticket ) );
         }
         $tickets->rewind();
-        return $this->render( 'ZendeskBundle:Default:view-user-tickets.html.twig', array( 'tickets' => $tickets, 'user' => $user ) );
+        return $this->render( 'ZendeskBundle:Default:view-user-tickets.html.twig', array( 'tickets' => $ticketsRendered, 'user' => $user ) );
     }
 
     public function addCommentAction()
@@ -45,7 +47,7 @@ class DefaultController extends Controller
         $request = $this->getRequest();
         if ( $request->getMethod() == 'POST' ) {
             $data = $request->request->all();
-            $ticket = $ticketRepo->getById( $data['ticketId'] );
+            $ticket = $this->get( 'zendesk.repo' )->get( 'Ticket' )->getById( $data['ticketId'] );
             if ( empty( $ticket ) ) {
                 throw new \Exception( "No such ticket." );
             }
@@ -101,6 +103,10 @@ class DefaultController extends Controller
     public function untouchedTicketsAction( $unixtime )
     {
         $tickets = $this->get( 'zendesk.repos' )->get( 'Ticket' )->getOpenTicketsOlderThan( $unixtime );
+        $ticketsRendered = array();
+        foreach ( $tickets as $ticket ) {
+            $ticketsRendered[] = $this->render( 'ZendeskBundle:Default:ticket.html.twig', array( 'ticket' => $ticket ) );
+        }
         return $this->render( 'ZendeskBundle:Default:tickets.html.twig', array( 'tickets' => $tickets ) );
     }
     

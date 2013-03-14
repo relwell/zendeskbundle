@@ -50,7 +50,7 @@ class Repository extends AbstractRepository
     protected function _create( AbstractEntity $instance )
     {
         $response = $this->_apiService->createTicket( $instance->toArray() );
-        if ( $response['ticket'] ) {
+        if (! empty( $response['ticket'] ) ) {
             $instance->setFields( $response['ticket'], true );
         }
         return $instance;
