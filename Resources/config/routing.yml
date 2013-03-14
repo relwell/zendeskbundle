@@ -13,6 +13,10 @@ zendesk_user_tickets:
 zendesk_user_ticket_create:
     pattern:  /user/tickets/{userId}/create
     defaults: { _controller: ZendeskBundle:Default:createTicket }
+
+zendesk_add_comment:
+    pattern:  /ticket/{ticket}/comment
+    defaults: { _controller: ZendeskBundle:Default:addComment }
     
 zendesk_ticket:
     pattern: /ticket/{ticket}

@@ -5,6 +5,28 @@
 		<td>{{value}}</td>
 	</tr>
 {% endfor %}
+        <tr>
+                <td colspan="2"><b>Collaborator Ids</b></td>
+        </tr>
+        <tr>
+                <td colspan="2">
+                {% for collabid in ticket.toArray.ticket.collaborator_ids %}
+                    {{collabid}} 
+               {% endfor %}
+                </td>
+        </tr>
+        <tr>
+             <td colspan="2">
+                 <b>Add Collaborator</b>
+                 <form method="POST" name="collab" action="{{path('zendesk_add_comment', {'ticket':ticket})}}">
+                     <label for="email">Email:</label>
+                     <input type="text" name="email"></input>
+                     <label for="name">Name:</label>
+                     <input type="text" name="name"></input>
+                     <input type="submit"></input>
+                 </form>
+             </td>
+        </tr>
 	<tr>
 		<td colspan="2"><b>Comments</b></td>
 	</tr>
@@ -22,7 +44,7 @@
 	{% endfor %}
 	<tr>
 		<td colspan="2">
-			<form method="POST" name="comment">
+			<form method="POST" name="comment" action="{{ path( 'zendesk_add_comment', {'ticket':ticket.id} ) }}">
 				<textarea name="comment"></textarea>
 				<input type="hidden" name="ticketId" value="{{ticket.id}}" />
 				<label for="public">Public:</label>

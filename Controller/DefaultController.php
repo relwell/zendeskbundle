@@ -31,15 +31,6 @@ class DefaultController extends Controller
         
         $ticketRepo = $this->get( 'zendesk.repos' )->get( 'Ticket' );
         $auditRepo = $this->get( 'zendesk.repos' )->get( 'Audit' );
-        $request = $this->getRequest();
-        if ( $request->getMethod() == 'POST' ) {
-            $data = $request->request->all();
-            $ticket = $ticketRepo->getById( $data['ticketId'] );
-            if ( empty( $ticket ) ) {
-                throw new \Exception( "No such ticket." );
-            }
-            $ticket->addComment( $data['comment'], !empty( $data['public'] ) );
-        }
         
         $tickets = $ticketRepo->getTicketsRequestedByUser( $user );
         foreach ( $tickets as $ticket ) {
@@ -48,6 +39,23 @@ class DefaultController extends Controller
         $tickets->rewind();
         return $this->render( 'ZendeskBundle:Default:view-user-tickets.html.twig', array( 'tickets' => $tickets, 'user' => $user ) );
     }
+
+    public function addCommentAction()
+    {
+        $request = $this->getRequest();
+        if ( $request->getMethod() == 'POST' ) {
+            $data = $request->request->all();
+            $ticket = $ticketRepo->getById( $data['ticketId'] );
+            if ( empty( $ticket ) ) {
+                throw new \Exception( "No such ticket." );
+            }
+            $ticket->addComment( $data['comment'], !empty( $data['public'] ) );
+        } else {
+            throw new \Exception( "only supports POST" );
+        }
+        return $this->redirect( $this->generateUrl( 'zendesk_ticket', array( 'ticket' => $ticket ) ) );
+    }
+        
     
     public function createTicketAction( $userId )
     {
