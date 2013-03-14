@@ -112,7 +112,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $mockEntity
             ->expects( $this->once() )
             ->method ( 'offsetSet' )
-            ->with   ( array( 123, 234 ) )
+            ->with   ( 'collaborator_ids', array( 123, 234 ) )
         ;
         $mockRepo
             ->expects( $this->once() )

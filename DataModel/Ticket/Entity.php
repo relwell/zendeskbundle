@@ -80,7 +80,7 @@ class Entity extends AbstractEntity
      */
     public function addCollaborator( $userOrId )
     {
-        $id = is_int( $userOrId ) ? $userOrId : $user['id'];
+        $id = is_int( $userOrId ) ? $userOrId : $userOrId['id'];
         $this['collaborator_ids'] = empty( $this['collaborator_ids'] ) ? array( $id ) : array_merge( $this['collaborator_ids'], array( $id ) );
         return $this->_repository->save( $this );
     }

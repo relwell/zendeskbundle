@@ -83,7 +83,7 @@ class DefaultController extends Controller
         if (! $ticket ) {
             throw new \Exception( "no ticket found" );
         }
-        $user = $this->get( 'zendesk.respos' )->get( 'User' )->getForNameAndEmail( $data['name'], $data['email'] )
+        $user = $this->get( 'zendesk.respos' )->get( 'User' )->getForNameAndEmail( $data['name'], $data['email'] );
         if ( $user ) {
             $ticket->addCollaborator( $user );
         }
