@@ -781,6 +781,25 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getGroups
+     */
+    public function testGetGroups()
+    {
+        $apiService = $this->apiService->setMethods( array( '_get' ) )->getMock();
+        $mockResponse = array( 'foo' );
+        $apiService
+            ->expects( $this->once() )
+            ->method ( '_get' )
+            ->with   ( "/groups/" )
+            ->will   ( $this->returnValue( $mockResponse ) );
+        ;
+        $this->assertEquals(
+                $mockResponse,
+                $apiService->getGroups()
+        );
+    }
+    
+    /**
      * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getAudit
      */
     public function testGetAudit()

@@ -266,6 +266,15 @@ class ApiService
     }
     
     /**
+     * Returns data about all groups.
+     * @return array
+     */
+    public function getGroups()
+    {
+        return $this->_get( "/groups/" );
+    }
+    
+    /**
      * Updates a ticket with the provided group ID.
      * @param int $ticketId
      * @param int $groupId
