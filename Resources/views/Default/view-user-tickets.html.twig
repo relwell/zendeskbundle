@@ -1,5 +1,5 @@
 <h1>Tickets for {{user.name}}</h1>
-{% if not tickets.valid %}
+{% if not tickets %}
 No tickets for this user.
 {% endif %}
 <form method="POST" name="comment" action="{{path( 'zendesk_user_ticket_create', { 'userId': user.id } )}}">
@@ -11,5 +11,5 @@ No tickets for this user.
 </form>
 <h2>Tickets</h2>
 {% for ticket in tickets %}
-{% render 'ZendeskBundle:Default:viewTicket' with {'ticket':ticket} %}
+{{ticket|raw}}
 {% endfor %}

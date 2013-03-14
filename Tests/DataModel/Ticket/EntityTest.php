@@ -84,4 +84,46 @@ class EntityTest extends \PHPUnit_Framework_TestCase
                 $mockEntity->addComment( 'foo' )
         );
     }
+
+    /**
+     * @covers Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity::addCollaborator
+     */
+    public function testAddCollaborator()
+    {
+        $mockRepo = $this->getMockBuilder( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository' )
+                         ->disableOriginalConstructor()
+                         ->setMethods( array( 'save' ) )
+                         ->getMock();
+        $mockUser = $this->getMockbuilder( 'Malwarebytes\ZendeskBundle\DataModel\User\Entity' )
+                         ->disableOriginalConstructor()
+                         ->setMethods( array( 'offsetGet' ) )
+                         ->getMock();
+        $mockEntity = $this->getMockBuilder( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
+                           ->setConstructorArgs( array( $mockRepo, array( 'collaborator_ids' => array( 123 ) ) ) )
+                           ->setMethods( array( 'offsetSet' ) )
+                           ->getMock();
+
+        $mockUser
+            ->expects( $this->atLeastOnce() )
+            ->method ( 'offsetGet' )
+            ->with   ( 'id' )
+            ->will   ( $this->returnValue( 234 ) )
+        ;
+        $mockEntity
+            ->expects( $this->once() )
+            ->method ( 'offsetSet' )
+            ->with   ( 'collaborator_ids', array( 123, 234 ) )
+        ;
+        $mockRepo
+            ->expects( $this->once() )
+            ->method ( 'save' )
+            ->with   ( $mockEntity )
+            ->will   ( $this->returnValue( $mockEntity ) )
+        ;
+        $this->assertEquals(
+                $mockEntity,
+                $mockEntity->addCollaborator( $mockUser )
+        );
+        
+    }
 }

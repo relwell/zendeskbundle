@@ -31,23 +31,33 @@ class DefaultController extends Controller
         
         $ticketRepo = $this->get( 'zendesk.repos' )->get( 'Ticket' );
         $auditRepo = $this->get( 'zendesk.repos' )->get( 'Audit' );
+        
+        $tickets = $ticketRepo->getTicketsRequestedByUser( $user );
+        $ticketsRendered = array();
+        foreach ( $tickets as $ticket ) {
+            $ticket['comments'] = $auditRepo->getCommentsForTicket( $ticket );
+            $ticketsRendered[] = $this->render( 'ZendeskBundle:Default:ticket.html.twig', array( 'ticket' => $ticket ) );
+        }
+        $tickets->rewind();
+        return $this->render( 'ZendeskBundle:Default:view-user-tickets.html.twig', array( 'tickets' => $ticketsRendered, 'user' => $user ) );
+    }
+
+    public function addCommentAction()
+    {
         $request = $this->getRequest();
         if ( $request->getMethod() == 'POST' ) {
             $data = $request->request->all();
-            $ticket = $ticketRepo->getById( $data['ticketId'] );
+            $ticket = $this->get( 'zendesk.repos' )->get( 'Ticket' )->getById( $data['ticketId'] );
             if ( empty( $ticket ) ) {
                 throw new \Exception( "No such ticket." );
             }
             $ticket->addComment( $data['comment'], !empty( $data['public'] ) );
+        } else {
+            throw new \Exception( "only supports POST" );
         }
-        
-        $tickets = $ticketRepo->getTicketsRequestedByUser( $user );
-        foreach ( $tickets as $ticket ) {
-            $ticket['comments'] = $auditRepo->getCommentsForTicket( $ticket );
-        }
-        $tickets->rewind();
-        return $this->render( 'ZendeskBundle:Default:view-user-tickets.html.twig', array( 'tickets' => $tickets, 'user' => $user ) );
+        return $this->redirect( $this->generateUrl( 'zendesk_ticket', array( 'ticket' => $ticket ) ) );
     }
+        
     
     public function createTicketAction( $userId )
     {
@@ -67,6 +77,20 @@ class DefaultController extends Controller
         }
         return $this->redirect( $this->generateUrl( 'zendesk_user_tickets', array( 'userId' => $userId ) ) );
     }
+
+    public function addCollaboratorAction() {
+        $request = $this->getRequest();
+        $data = $request->request->all();
+        $ticket = $this->get( 'zendesk.repos' )->get( 'Ticket' )->getById( $data['ticketId'] );
+        if (! $ticket ) {
+            throw new \Exception( "no ticket found" );
+        }
+        $user = $this->get( 'zendesk.repos' )->get( 'User' )->getForNameAndEmail( $data['name'], $data['email'] );
+        if ( $user ) {
+            $ticket->addCollaborator( $user );
+        }
+        return $this->redirect( $this->generateUrl( 'zendesk_ticket', array( 'ticket' => $ticket['id'] ) ) );
+    }
     
     public function viewTicketAction( $ticket )
     {
@@ -79,6 +103,10 @@ class DefaultController extends Controller
     public function untouchedTicketsAction( $unixtime )
     {
         $tickets = $this->get( 'zendesk.repos' )->get( 'Ticket' )->getOpenTicketsOlderThan( $unixtime );
+        $ticketsRendered = array();
+        foreach ( $tickets as $ticket ) {
+            $ticketsRendered[] = $this->render( 'ZendeskBundle:Default:ticket.html.twig', array( 'ticket' => $ticket ) );
+        }
         return $this->render( 'ZendeskBundle:Default:tickets.html.twig', array( 'tickets' => $tickets ) );
     }
     
