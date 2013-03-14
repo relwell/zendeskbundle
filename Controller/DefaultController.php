@@ -67,6 +67,20 @@ class DefaultController extends Controller
         }
         return $this->redirect( $this->generateUrl( 'zendesk_user_tickets', array( 'userId' => $userId ) ) );
     }
+
+    public function addCollaboratorAction() {
+        $request = $this->getRequest();
+        $data = $request->request->all();
+        $ticket = $this->get( 'zendesk.repos' )->get( 'Ticket' )->getById( $data['ticketId'] );
+        if (! $ticket ) {
+            throw new \Exception( "no ticket found" );
+        }
+        $user = $this->get( 'zendesk.respos' )->get( 'User' )->getForNameAndEmail( $data['name'], $data['email'] )
+        if ( $user ) {
+            $ticket->addCollaborator( $user );
+        }
+        return $this->redirect( $this->generateUrl( 'zendesk_view_ticket', array( 'ticket' => $ticket ) ) );
+    }
     
     public function viewTicketAction( $ticket )
     {
