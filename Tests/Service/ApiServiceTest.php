@@ -550,6 +550,27 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getGroupById
+     */
+    public function testGetGroupById()
+    {
+        $apiService = $this->apiService->setMethods( array( '_get' ) )->getMock();
+        $response = array( 'response' );
+        $groupId = 123;
+        $apiService
+            ->expects( $this->once() )
+            ->method ( '_get' )
+            ->with   ( "/groups/{$groupId}" )
+            ->will   ( $this->returnValue( $response ) )
+        ;
+        $this->assertEquals(
+                $response,
+                $apiService->getGroupById( $groupId )
+        );
+    }
+    
+    
+    /**
      * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getTicketsAssignedToUser
      */
     public function testGetTicketsAssignedToUser()
