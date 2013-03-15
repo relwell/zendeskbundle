@@ -29,3 +29,7 @@ zendesk_ticket:
 zendesk_old_tickets:
     pattern: /opentickets/untouchedsince/{unixtime}
     defaults: { _controller: ZendeskBundle:Default:untouchedTickets }
+
+zendesk_change_group:
+    pattern: /ticketchgrp
+    defaults: { _controller: ZendeskBundle:Default:changeTicketGroup }

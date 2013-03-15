@@ -6,6 +6,19 @@
 	</tr>
 {% endfor %}
         <tr>
+                <td colspan="2">
+                <form method="POST" name="group" action="{{path('zendesk_change_group')}}">
+                <input type="hidden" name="ticketId" value="{{ticket.id}}">
+                <select name="groupId">
+                {% for group in groups %}
+                <option value="{{group.id}}" {% if group.id == ticket.group_id %}selected {% endif %}>{{group.name}}</option>
+                {% endfor %}
+                </select>
+                <input type="submit"></input>
+                </form>
+                </td>
+        </tr>
+        <tr>
                 <td colspan="2"><b>Collaborator Ids</b></td>
         </tr>
         <tr>

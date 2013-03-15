@@ -97,7 +97,26 @@ class DefaultController extends Controller
         if (! $ticket instanceof \MalwareBytes\ZendeskBundle\DataModel\Ticket\Entity ) {
             $ticket = $this->get( 'zendesk.repos' )->get( 'Ticket' )->getById( $ticket );
         }
-        return $this->render( 'ZendeskBundle:Default:ticket.html.twig', array( 'ticket' => $ticket ) );
+        $groups = $this->get( 'zendesk.repos' )->get( 'Group' )->getByDefaultSort();
+        return $this->render( 'ZendeskBundle:Default:ticket.html.twig', array( 'ticket' => $ticket, 'groups' => $groups ) );
+    }
+    
+    public function changeTicketGroupAction()
+    {
+        $request = $this->getRequest();
+        $data = $request->request->all();
+        $ticketRepo = $this->get( 'zendesk.repos' )->get( 'Ticket' );
+        $ticket = $ticketRepo->getById( $data['ticketId'] );
+        if (! $ticket ) {
+            throw new \Exception( "no ticket found" );
+        }
+        $group = $this->get( 'zendesk.repos' )->get( 'Group' )->getById( $data['groupId'] );
+        if (! $group ) {
+            throw new \Exception( "no group found" );
+        }
+        $ticket['group_id'] = $group['id'];
+        $ticketRepo->save( $ticket );
+        return $this->redirect( $this->generateUrl( 'zendesk_ticket', array( 'ticket' => $ticket['id'] ) ) );
     }
     
     public function untouchedTicketsAction( $unixtime )
@@ -108,6 +127,12 @@ class DefaultController extends Controller
             $ticketsRendered[] = $this->render( 'ZendeskBundle:Default:ticket.html.twig', array( 'ticket' => $ticket ) );
         }
         return $this->render( 'ZendeskBundle:Default:tickets.html.twig', array( 'tickets' => $tickets ) );
+    }
+    
+    public function groupAction( $groupId )
+    {
+        $group = $this->get( 'zendesk.repos' )->get( 'Group' )->getById( $groupId );
+        return $this->renderView( 'ZendeskBundle:Default:group.html.twig', array( 'group' => $group ) );
     }
     
     public function indexAction($name)
