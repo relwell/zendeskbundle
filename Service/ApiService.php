@@ -271,7 +271,7 @@ class ApiService
      */
     public function getGroups()
     {
-        return $this->_get( "/groups/" );
+        return $this->_get( "/groups" );
     }
     
     /**

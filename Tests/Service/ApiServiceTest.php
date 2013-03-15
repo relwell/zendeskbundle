@@ -833,7 +833,7 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
         $apiService
             ->expects( $this->once() )
             ->method ( '_get' )
-            ->with   ( "/groups/" )
+            ->with   ( "/groups" )
             ->will   ( $this->returnValue( $mockResponse ) );
         ;
         $this->assertEquals(
