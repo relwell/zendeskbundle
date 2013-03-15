@@ -203,6 +203,49 @@ class ApiServiceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::createGroup
+     */
+    public function testCreateGroup()
+    {
+        $service = $this->apiService->setMethods( null )->getMock();
+        $responseArray = array( 'mockresponse' );
+        $service->setZendeskApi( $this->zendesk );
+        $dataArray['name'] = 'tha group';
+        $this->zendesk
+            ->expects( $this->once() )
+            ->method ( 'call' )
+            ->with   ( '/groups', json_encode( $dataArray ), 'POST' )
+            ->will   ( $this->returnValue( $responseArray ) )
+        ; 
+        $this->assertEquals(
+                $responseArray,
+                $service->createGroup( $dataArray )
+        );
+    }
+    
+    /**
+     * @covers Malwarebytes\ZendeskBundle\Service\ApiService::updateGroup
+     */
+    public function testUpdateGroup()
+    {
+        $service = $this->apiService->setMethods( null )->getMock();
+        $responseArray = array( 'mockresponse' );
+        $service->setZendeskApi( $this->zendesk );
+        $dataArray['name'] = 'tha group';
+        $groupId = 123;
+        $this->zendesk
+            ->expects( $this->once() )
+            ->method ( 'call' )
+            ->with   ( "/groups/{$groupId}", json_encode( $dataArray ), 'PUT' )
+            ->will   ( $this->returnValue( $responseArray ) )
+        ; 
+        $this->assertEquals(
+                $responseArray,
+                $service->updateGroup( $groupId, $dataArray )
+        );
+    }
+    
+    /**
      * @covers Malwarebytes\ZendeskBundle\Service\ApiService::getTicketsRequestedByUser
      */
     public function testGetTicketsRequestedByUser()

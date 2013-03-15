@@ -275,6 +275,27 @@ class ApiService
     }
     
     /**
+     * Creates an instance of a group.
+     * @param array $groupData
+     * @return array
+     */
+    public function createGroup( array $groupData )
+    {
+        return $this->_api->call( '/groups', json_encode( $groupData ), 'POST' );
+    }
+    
+    /**
+     * Updates a group
+     * @param int $groupId
+     * @param array $groupData
+     * @return array
+     */
+    public function updateGroup( $groupId, array $groupData )
+    {
+        return $this->_api->call( "/groups/{$groupId}", json_encode( $groupData ), 'PUT' );
+    }
+    
+    /**
      * Updates a ticket with the provided group ID.
      * @param int $ticketId
      * @param int $groupId
