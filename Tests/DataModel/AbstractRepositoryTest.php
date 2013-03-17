@@ -88,6 +88,43 @@ class AbstractRepositoryTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @covers \Malwarebytes\ZendeskBundle\DataModel\AbstractRepository::save
+     */
+    public function testSaveIncomplete()
+    {
+        $entity = $this->getMockBuilder( '\Malwarebytes\ZendeskBundle\DataModel\AbstractEntity' )
+                       ->setMethods( array( 'exists', 'isIncomplete' ) )
+                       ->disableOriginalConstructor()
+                       ->getMockForAbstractClass();
+        $exception = $this->getMockBuilder( '\Exception' )
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $this->_configure( array(), array( '_update' ) );
+        $entity
+            ->expects( $this->once() )
+            ->method ( 'exists' )
+            ->will   ( $this->returnValue( true ) )
+        ;
+        $entity
+            ->expects( $this->once() )
+            ->method ( 'isIncomplete' )
+            ->will   ( $this->returnValue( true ) )
+        ;
+        $this->repo
+            ->expects( $this->never() )
+            ->method ( '_update' )
+            ->will   ( $this->returnValue( $entity ) )
+        ;
+        try {
+            $this->repo->save( $entity );
+        } catch ( \Exception $e ) {}
+        $this->assertInstanceOf(
+                '\Exception',
+                $e
+        );
+    }
+    
+    /**
      * @covers \Malwarebytes\ZendeskBundle\DataModel\AbstractRepository::_buildPaginatorFromResponse
      */
     public function test_buildPaginatorFromResponse()
@@ -154,6 +191,27 @@ class AbstractRepositoryTest extends \PHPUnit_Framework_TestCase
         ;
         $this->assertTrue(
                 $this->repo->updatePaginator( $mockPaginator )
+        );
+    }
+    
+    /**
+     * @covers \Malwarebytes\ZendeskBundle\DataModel\AbstractRepository::_validateResponse
+     */
+    public function testValidateResponse() {
+        $this->_configure( array(), array() );
+        $response = array( 'error' => 'your mom', 'description' => 'she so fat' );
+        $validate = new \ReflectionMethod( '\Malwarebytes\ZendeskBundle\DataModel\AbstractRepository', '_validateResponse' );
+        $validate->setAccessible( true );
+        try {
+            $validate->invoke( $this->repo, $response );
+        } catch ( \Malwarebytes\ZendeskBundle\DataModel\ApiResponseException $e ) {}
+        $this->assertInstanceOf(
+                '\Malwarebytes\ZendeskBundle\DataModel\ApiResponseException',
+                $e
+        );
+        unset( $response['error'] );
+        $this->assertTrue(
+                $validate->invoke( $this->repo, $response )
         );
     }
 }
