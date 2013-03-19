@@ -26,9 +26,7 @@ class Repository extends AbstractRepository
     {
         $this->_currentResponse = $response;
         $entities = array();
-        if (! empty( $response['error'] ) ) {
-            throw new ApiResponseException( $response );
-        }
+        $this->_validateResponse( $response );
         if (! empty( $response['audit'] ) ) {
             $entities[] = new Entity( $this, $response['audit'] );
         } else if (! empty( $response['audits'] ) ) {
@@ -78,7 +76,7 @@ class Repository extends AbstractRepository
      */
     public function getByDefaultSort()
     {
-        return $this->_apiService->getAuditsForTicket( $this->_ticket[$this->_ticket->getPrimaryKey()] );
+        return $this->_buildPaginatorFromResponse( $this->_apiService->getAuditsForTicket( $this->_ticket[$this->_ticket->getPrimaryKey()] ) );
     }
     
     /**
@@ -89,7 +87,7 @@ class Repository extends AbstractRepository
     public function getForTicket( Ticket $ticket )
     {
         $this->setTicket( $ticket );
-        return $this->_apiService->getAuditsForTicket( $ticket[$ticket->getPrimaryKey()] );
+        return $this->_buildPaginatorFromResponse( $this->_apiService->getAuditsForTicket( $ticket[$ticket->getPrimaryKey()] ) );
     }
     
     /**
@@ -103,13 +101,12 @@ class Repository extends AbstractRepository
         $comments = array();
         foreach ( $response['audits'] as $audit )
         {
-            if ( empty( $audit['events'] ) ) {
-                continue;
-            }
-            foreach ( $audit['events'] as $event )
-            {
-                if ( $event['type'] == 'Comment' ) {
-                    $comments[] = new Comment( $event );
+            if (! empty( $audit['events'] ) ) {
+                foreach ( $audit['events'] as $event )
+                {
+                    if ( $event['type'] == 'Comment' ) {
+                        $comments[] = new Comment( $event );
+                    }
                 }
             }
         }
@@ -128,6 +125,7 @@ class Repository extends AbstractRepository
         if ( $this->_ticket === null ) {
             throw new \Exception( "Please set a ticket to operate on first" );
         }
-        
+        $entities = $this->_buildFromResponse( $this->_apiService->getAudit( $this->_ticket['id'], $id ) );
+        return array_shift( $entities );
     }
 }
