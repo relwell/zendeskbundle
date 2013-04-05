@@ -19,22 +19,10 @@ class ZendeskService
     protected $_repos;
     
     /**
-     * Memoization cache for user entities.
+     * Generalized memoization cache
      * @var array
      */
-    protected $_users = array();
-    
-    /**
-     * Memoization cache for groups
-     * @var array
-     */
-    protected $_groups = array();
-    
-    /**
-     * Memoziation cache for ticket entities
-     * @var array
-     */
-    protected $_tickets = array();
+    protected $_cache;
     
     public function __construct( RepositoryService $repoService )
     {
@@ -49,18 +37,23 @@ class ZendeskService
      */
     public function getTicketsWithCommentsForUserId( $userId )
     {
-        $user = $this->getUserById( $userId );
+        $user = $this->getById( 'User', $userId );
         $ticketRepo = $this->_repos->get( 'Ticket' );
-        $auditRepo = $this->_repos->get( 'Audit' );
-        
         $tickets = $ticketRepo->getTicketsRequestedByUser( $user );
-        $ticketsRendered = array();
         foreach ( $tickets as $ticket ) {
-            $ticket['comments'] = $auditRepo->getCommentsForTicket( $ticket );
-            $ticketsRendered[] = $this->render( 'ZendeskBundle:Default:ticket.html.twig', array( 'ticket' => $ticket ) );
+            $ticket['comments'] = $this->getCommentsForTicket( $ticket );
         }
-        $tickets->rewind();
         return $tickets;
+    }
+    
+    /**
+     * Puts "comments" field in ticket
+     * @param Ticket $ticket
+     * @return array
+     */
+    public function getCommentsForTicket( Ticket $ticket )
+    {
+        return $this->_repos->get( 'Audit' )->getCommentsForTicket( $ticket );
     }
     
     /**
@@ -71,7 +64,7 @@ class ZendeskService
      */
     public function createTicketAsUser( $userId, $subject, $comment )
     {
-        $user = $this->getUserById( $userId ); // validates our user
+        $user = $this->getById( 'User', $userId ); // validates our user
         $ticketRepo = $this->_repos->get( 'Ticket' );
         $ticket = new Ticket( $ticketRepo );
         $ticket['requester_id'] = $user['id'];
@@ -90,8 +83,8 @@ class ZendeskService
      */
     public function addCollaboratorToTicket( $ticketId, $userName, $userEmail )
     {
-        $ticket = $this->getTicketById( $ticketId );
-        $user = $this->_repos->get( 'Users' )->getForNameAndEmail( $userName, $userEmail );
+        $ticket = $this->getById( 'Ticket', $ticketId );
+        $user = $this->_repos->get( 'User' )->getForNameAndEmail( $userName, $userEmail );
         if ( $user ) {
             $ticket->addCollaborator( $user );
         }
@@ -106,10 +99,10 @@ class ZendeskService
      */
     public function changeTicketGroup( $ticketId, $groupId )
     {
-        $ticket = $this->getTicketById( $ticketId );
-        $group = $this->getGroupById( $groupId );
+        $ticket = $this->getById( 'Ticket', $ticketId );
+        $group = $this->getById( 'Group', $groupId );
         $ticket['group_id'] = $group['id'];
-        $this->_repos->get( 'Tickets' )->save( $ticket );
+        $this->_repos->get( 'Ticket' )->save( $ticket );
         return $this;
     }
     
@@ -122,44 +115,30 @@ class ZendeskService
      */
     public function addCommentToTicket( $ticketId, $comment, $public = false )
     {
-        $ticket = $this->getTicketById( $ticketId );
+        $ticket = $this->getById( 'Ticket', $ticketId );
         $ticket->addComment( $comment, $public );
         return $ticket;
     }
     
     /**
-     * Returns a ticket given an ID
-     * @param int $ticketId
-     * @throws \Exception
-     * @return Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity
+     * Generalized get by ID with memoization cache
+     * @param string $repoString
+     * @param int $entityId
+     * @return Malwarebytes\ZendeskBundle\DataModel\AbstractEntity
      */
-    public function getTicketById( $ticketId )
+    public function getById( $repoString, $entityId )
     {
-        if ( empty( $this->_tickets[$ticketId] ) ) {
-            $ticket = $this->_repos->get( 'Ticket' )->getById( $ticketId );
-            if ( empty( $ticket ) ) {
-                throw new \Exception( "No ticket with ID {$ticketId}" );
-            }
-            $this->_tickets[$ticketId] = $ticket;
+        // initialize cache for this repo
+        if (! isset( $this->_cache[$repoString] ) ) {
+            $this->_cache[$repoString] = array();
         }
-        return $this->_tickets[$ticketId];
-    }
-    
-    /**
-     * Returns a group given an ID
-     * @param int $groupId
-     * @throws \Exception
-     * @return Malwarebytes\ZendeskBundle\DataModel\Group\Entity
-     */
-    public function getGroupById( $groupId )
-    {
-        if ( empty( $this->_groups[$groupId] ) ) {
-            $group = $this->_repos->get( 'Group' )->getById( $groupId );
-            if ( empty( $group ) ) {
-                throw new \Exception( "No group with ID {$groupId}" );
+        if ( empty( $this->_cache[$repoString][$entityId] ) ) {
+            $entity = $this->_repos->get( $repoString )->getById( $entityId );
+            if ( empty( $entity ) ) {
+                throw new \Exception( "No entity for found for ID {$entityId} and repository \"{$repoString}\"" );
             }
-            $this->_groups[$groupId] = $group;
+            $this->_cache[$repoString][$entityId] = $entity;
         }
-        return $this->_groups[$groupId];
+        return $this->_cache[$repoString][$entityId];
     }
 }

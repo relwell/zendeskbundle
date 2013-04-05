@@ -26,8 +26,9 @@ class DefaultController extends Controller
     {
         $zendeskService = $this->get( 'zendesk.service' );
         $tickets = $zendeskService->getTicketsWithCommentsForUserId( $userId );
-        $user = $zendeskService->getUserById( $userId );
-        return $this->render( 'ZendeskBundle:Default:view-user-tickets.html.twig', array( 'tickets' => $tickets, 'user' => $user ) );
+        $user = $zendeskService->getById( 'User', $userId );
+        $groups = $this->get( 'zendesk.repos' )->get( 'Group' )->getByDefaultSort();
+        return $this->render( 'ZendeskBundle:Default:view-user-tickets.html.twig', array( 'tickets' => $tickets, 'user' => $user, 'groups' => $groups ) );
     }
 
     public function addCommentAction()
@@ -39,7 +40,7 @@ class DefaultController extends Controller
         } else {
             throw new \Exception( "only supports POST" );
         }
-        return $this->redirect( $this->generateUrl( 'zendesk_ticket', array( 'ticket' => $ticket ) ) );
+        return $this->redirect( $this->generateUrl( 'zendesk_ticket', array( 'ticket' => $ticket['id'] ) ) );
     }
         
     
@@ -62,9 +63,8 @@ class DefaultController extends Controller
     
     public function viewTicketAction( $ticket )
     {
-        if (! $ticket instanceof \MalwareBytes\ZendeskBundle\DataModel\Ticket\Entity ) {
-            $ticket = $this->get( 'zendesk.repos' )->get( 'Ticket' )->getById( $ticket );
-        }
+        $ticket = $this->get( 'zendesk.service' )->getById( 'Ticket', $ticket );
+        $ticket['comments'] = $this->get( 'zendesk.service' )->getCommentsForTicket( $ticket );
         $groups = $this->get( 'zendesk.repos' )->get( 'Group' )->getByDefaultSort();
         return $this->render( 'ZendeskBundle:Default:ticket.html.twig', array( 'ticket' => $ticket, 'groups' => $groups ) );
     }
@@ -89,7 +89,7 @@ class DefaultController extends Controller
     
     public function groupAction( $groupId )
     {
-        $group = $this->get( 'zendesk.repos' )->get( 'Group' )->getById( $groupId );
+        $group = $this->get( 'zendesk.service' )->getById( 'Group', $groupId );
         return $this->renderView( 'ZendeskBundle:Default:group.html.twig', array( 'group' => $group ) );
     }
     

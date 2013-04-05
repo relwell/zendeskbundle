@@ -97,9 +97,9 @@ class Repository extends AbstractRepository
      */
     public function getCommentsForTicket( Ticket $ticket )
     {
-        $response = $this->getForTicket( $ticket );
+        $paginator = $this->getForTicket( $ticket );
         $comments = array();
-        foreach ( $response['audits'] as $audit )
+        foreach ( $paginator as $audit )
         {
             if (! empty( $audit['events'] ) ) {
                 foreach ( $audit['events'] as $event )

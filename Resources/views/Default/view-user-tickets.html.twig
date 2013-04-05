@@ -11,5 +11,6 @@ No tickets for this user.
 </form>
 <h2>Tickets</h2>
 {% for ticket in tickets %}
-{{ticket|raw}}
+{% embed "ZendeskBundle:Default:ticket.html.twig" with {ticket:ticket, groups:groups} %}
+{% endembed %}
 {% endfor %}

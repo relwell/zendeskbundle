@@ -65,7 +65,7 @@ class Repository extends AbstractRepository
     protected function _update( AbstractEntity $instance )
     {
         $response = $this->_apiService->updateTicket( $instance['id'], $instance->toArray() );
-        if ( $response['ticket'] ) {
+        if (! empty( $response['ticket'] ) ) {
             $instance->setFields( $response['ticket'], true );
         }
         return $instance;
