@@ -11,5 +11,5 @@ services:
         class: %zendesk.repositoryservice.class%
         arguments: [@zendesk.api]
     zendesk.service:
-        class: %zendesk.service.class%
+        class: %zendesk.zendeskservice.class%
         arguments: [@zendesk.repos]
