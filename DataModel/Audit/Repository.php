@@ -101,7 +101,7 @@ class Repository extends AbstractRepository
         $comments = array();
         foreach ( $paginator as $audit )
         {
-            if (! empty( $audit['events'] ) ) {
+            if ( $audit->offsetExists( 'events' ) && count( $audit['events'] ) > 0 ) {
                 foreach ( $audit['events'] as $event )
                 {
                     if ( $event['type'] == 'Comment' ) {

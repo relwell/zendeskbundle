@@ -263,20 +263,47 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
     public function testGetCommentsForTicket()
     {
         $this->_configure( null, array( 'getForTicket' ) );
-        $response = array( 'audits' => array( array( 'events' => array( array( 'type' => 'Comment', 'id' => 123 ) ) ) ) );
+        
         $ticket = $this->getMockBuilder( 'Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity' )
                        ->disableOriginalConstructor()
                        ->getMock();
+        
+        $audit = $this->getMockBuilder( 'Malwarebytes\ZendeskBundle\DataModel\Audit\Entity' )
+                      ->disableOriginalConstructor()
+                      ->setMethods( array( 'offsetGet', 'offsetExists' ) )
+                      ->getMock();
+        
+        $paginator = $this->getMockBuilder( 'Malwarebytes\ZendeskBundle\DataModel\Paginator' )
+                          ->setConstructorArgs( array( $this->repo, array( $audit ) ) )
+                          ->setMethods( null )
+                          ->getMock();
+        
         $this->repo
             ->expects( $this->once() )
             ->method ( 'getForTicket' )
             ->with   ( $ticket )
-            ->will   ( $this->returnValue( $response ) )
+            ->will   ( $this->returnValue( $paginator ) )
+        ;
+        $audit
+            ->expects( $this->any() )
+            ->method ( 'offsetExists' )
+            ->with   ( 'events' )
+            ->will   ( $this->returnValue( true ) )
+        ;
+        $audit
+            ->expects( $this->any() )
+            ->method ( 'offsetGet' )
+            ->with   ( 'events' )
+            ->will   ( $this->returnValue( array( array( 'type' => 'Comment' ), array( 'type' => 'Not A Comment' ) ) ) )
         ;
         $result = $this->repo->getCommentsForTicket( $ticket );
         $this->assertContainsOnly(
                 'Malwarebytes\ZendeskBundle\DataModel\Audit\Comment',
                 $result
+        );
+        $this->assertEquals(
+                1,
+                count( $result )
         );
     }
     
