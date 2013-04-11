@@ -127,4 +127,14 @@ abstract class AbstractRepository
         }
         return !empty( $entities );
     }
+    
+    /**
+     * Creates a new, unsaved instance of the current class.
+     * @return AbstractEntity
+     */
+    public function factory()
+    {
+        $entity = '\\' . implode( '\\', array_slice( explode( '\\', get_class( $this ) ), 0, -1 ) ) . '\Entity';
+        return new $entity( $this ); 
+    }
 }

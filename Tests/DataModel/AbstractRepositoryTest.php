@@ -214,4 +214,17 @@ class AbstractRepositoryTest extends \PHPUnit_Framework_TestCase
                 $validate->invoke( $this->repo, $response )
         );
     }
+    
+    /**
+     * @covers \Malwarebytes\ZendeskBundle\DataModel\AbstractRepository::factory
+     */
+    public function testFactory() {
+        $this->_configure();
+        $repo = new \Malwarebytes\ZendeskBundle\DataModel\Ticket\Repository( $this->apiService );
+        
+        $this->assertInstanceOf(
+                'Malwarebytes\ZendeskBundle\DataModel\Ticket\Entity',
+                $repo->factory()
+        );
+    }
 }
