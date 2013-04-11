@@ -66,7 +66,7 @@ class ZendeskService
     {
         $user = $this->getById( 'User', $userId ); // validates our user
         $ticketRepo = $this->_repos->get( 'Ticket' );
-        $ticket = new Ticket( $ticketRepo );
+        $ticket = $ticketRepo->factory();
         $ticket['requester_id'] = $user['id'];
         $ticket['subject'] = $subject;
         $ticket['comment'] = array( 'body' => $comment );
