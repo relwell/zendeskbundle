@@ -1,3 +1,9 @@
+About
+==============
+Malwarebytes\ZendeskBundle is a bundle designed to encapsulate Zendesk's REST API using 
+a repository/entity scheme for its data model. It is a continuous work in progress.
+
+
 Dependencies
 ================
 Zendesk API Client
